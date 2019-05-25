@@ -32,9 +32,10 @@ public class Startup
 
 ### 3. Use it!
 
-Inject the `ObserverService` then pass the element reference with the callback to the `Observe` method. The callback will be triggered with any updates, giving you the ability to update the component with the observer's `entries`.
+For the quickest setup, use the `IntersectionObserve` component. This provides an implicit context
+object which contains the observer entry! Easy!
 
-#### Quick Example
+#### Component setup
 
 ```razor
 @using Blazor.IntersectionObserver.Components
@@ -46,7 +47,9 @@ Inject the `ObserverService` then pass the element reference with the callback t
 </IntersectionObserve>
 ```
 
-#### Detailed Example
+#### Service setup
+
+To directly use the service, you just need to inject it and observe the element(s).
 
 ```razor
 @using Blazor.IntersectionObserver
