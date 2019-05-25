@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{06DF5E56-1E2C-4435-854E-0155228D42E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FDB1A9E6-1D17-4800-B669-F37D1CB295B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{5D04FCF1-FEF2-4F22-BF8A-5ACD34C364D7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.IntersectionObserver", "src\Blazor.IntersectionObserver\Blazor.IntersectionObserver.csproj", "{08BF0C04-9C65-4477-836A-B4DFF36D2C28}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.IntersectionObserver.JS", "src\Blazor.IntersectionObserver.JS\Blazor.IntersectionObserver.JS.csproj", "{8FFD1338-9BFF-483C-8308-E1B439E95767}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.IntersectionObserver.Test", "..\Blazor.IntersectionObserver/test\Blazor.IntersectionObserver.Test\Blazor.IntersectionObserver.Test.csproj", "{F710A299-DB6E-46FB-9193-18BE5592427B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{08BF0C04-9C65-4477-836A-B4DFF36D2C28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08BF0C04-9C65-4477-836A-B4DFF36D2C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08BF0C04-9C65-4477-836A-B4DFF36D2C28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08BF0C04-9C65-4477-836A-B4DFF36D2C28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FFD1338-9BFF-483C-8308-E1B439E95767}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FFD1338-9BFF-483C-8308-E1B439E95767}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FFD1338-9BFF-483C-8308-E1B439E95767}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FFD1338-9BFF-483C-8308-E1B439E95767}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F710A299-DB6E-46FB-9193-18BE5592427B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F710A299-DB6E-46FB-9193-18BE5592427B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F710A299-DB6E-46FB-9193-18BE5592427B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F710A299-DB6E-46FB-9193-18BE5592427B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{08BF0C04-9C65-4477-836A-B4DFF36D2C28} = {06DF5E56-1E2C-4435-854E-0155228D42E6}
+		{8FFD1338-9BFF-483C-8308-E1B439E95767} = {06DF5E56-1E2C-4435-854E-0155228D42E6}
+		{F710A299-DB6E-46FB-9193-18BE5592427B} = {FDB1A9E6-1D17-4800-B669-F37D1CB295B6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A1E800E-0698-42F3-8B5D-2788225893E5}
+	EndGlobalSection
+EndGlobal
