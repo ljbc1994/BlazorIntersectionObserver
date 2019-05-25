@@ -1,4 +1,4 @@
-# Blazor.IntersectionObserver
+# BlazorIntersectionObserver
 
 > A comprehensive wrapper around the Intersection Observer API, giving you all the goodness of observing intersections in a performant way.
 
@@ -8,10 +8,10 @@ This is a wrapper around the [Intersection Observer API](https://developer.mozil
 
 ### 1. Installation
 
-Install `Blazor.IntersectionObserver` through NuGet.
+Install `BlazorIntersectionObserver` through NuGet.
 
 ```bash
-> dotnet add package Blazor.IntersectionObserver
+> dotnet add package BlazorIntersectionObserver
 ```
 
 ### 2. Register the service
