@@ -1,5 +1,9 @@
 # BlazorIntersectionObserver
 
+[![Package Version](https://img.shields.io/nuget/v/BlazorIntersectionObserver.svg)](https://www.nuget.org/packages/BlazorIntersectionObserver)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/BlazorIntersectionObserver.svg)](https://www.nuget.org/packages/BlazorIntersectionObserver)
+[![License](https://img.shields.io/github/license/ljbc1994/BlazorIntersectionObserver.svg)](https://github.com/ljbc1994/BlazorIntersectionObserver/blob/master/LICENCE)
+
 > A comprehensive wrapper around the Intersection Observer API, giving you all the goodness of observing intersections in a performant way.
 
 This is a wrapper around the [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) so that you can use it in `Blazor`. It has the same API structure with convenience methods and components for a better dev experience.
