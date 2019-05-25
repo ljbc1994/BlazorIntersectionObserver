@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.IntersectionObserver
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.IntersectionObserver.JS", "src\Blazor.IntersectionObserver.JS\Blazor.IntersectionObserver.JS.csproj", "{8FFD1338-9BFF-483C-8308-E1B439E95767}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.IntersectionObserver.Test", "..\Blazor.IntersectionObserver/test\Blazor.IntersectionObserver.Test\Blazor.IntersectionObserver.Test.csproj", "{F710A299-DB6E-46FB-9193-18BE5592427B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.IntersectionObserver.Test", "test\Blazor.IntersectionObserver.Test\Blazor.IntersectionObserver.Test.csproj", "{F710A299-DB6E-46FB-9193-18BE5592427B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

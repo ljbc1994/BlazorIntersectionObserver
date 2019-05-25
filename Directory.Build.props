@@ -4,11 +4,12 @@
     <Authors>Louie Colgan</Authors>
     <Product>Blazor.IntersectionObserver</Product>
     <Copyright>Copyright © 2019 - Louie Colgan</Copyright>
-    <PackageLicenseUrl>https://github.com/ljbc1994/Blazor.IntersectionObserver#license</PackageLicenseUrl>
+    <Summary>Intersection Observer API wrapper for Blazor</Summary>
     <PackageProjectUrl>https://github.com/ljbc1994/Blazor.IntersectionObserver</PackageProjectUrl>
     <PackageIconUrl>https://avatars3.githubusercontent.com/u/10697889</PackageIconUrl>
     <PackageTags>Microsoft ASP.NET Core Blazor Intersection Observer</PackageTags>
     <RepositoryUrl>https://github.com/ljbc1994/Blazor.IntersectionObserver</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/ljbc1994/Blazor.IntersectionObserver/blob/master/LICENCE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes></PackageReleaseNotes>
