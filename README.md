@@ -46,7 +46,7 @@ object which contains the observer entry! Easy!
 
 <IntersectionObserve>
     <div>
-        Hey... looks I'm @(context?.IsIntersecting ? "intersecting!": "not intersecting!")
+        Hey... look I'm @(context?.IsIntersecting ? "intersecting!": "not intersecting!")
     </div>
 </IntersectionObserve>
 ```
@@ -196,7 +196,7 @@ Rather than directly interfacing with the service, you can use this convenience 
 
 <IntersectionObserve>
     <div>
-        Hey... looks I'm @(context?.IsIntersecting ? "intersecting!": "not intersecting!")
+        Hey... look I'm @(context?.IsIntersecting ? "intersecting!": "not intersecting!")
     </div>
 </IntersectionObserve>
 
