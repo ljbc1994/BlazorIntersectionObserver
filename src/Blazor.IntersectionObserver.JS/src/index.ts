@@ -72,7 +72,7 @@ namespace BlazorIntersectionObserverJS {
      * @param {string} observerId - The observer id
      * @returns {IntersectionObserverInstance} - The observer instance
      */
-    function observeInstanceElement(instance: IntersectionObserverInstance, element: Element, observerId: string) {
+    function observeInstanceElement(instance: IntersectionObserverInstance, observerId: string, element: Element) {
         const { elements, observer } = instance;
         const observerElements = elements.get(observerId);
 
@@ -122,8 +122,11 @@ namespace BlazorIntersectionObserverJS {
      * @param {IntersectionObserverInit} options - The intersection obsever options
      * @returns {IntersectionObserverItem} - The observer item
      */
-    export function create(dotnetRef: IDotNetObjectRef, options: IntersectionObserverInit) {
-        return getObserverItem(dotnetRef, options);
+    export function create(dotnetRef: IDotNetObjectRef, id: string, options: IntersectionObserverInit) {
+      const item = getObserverItem(dotnetRef, options);
+      const { instance } = item;
+      instance.elements.set(id, new Set<Element>([]));
+      return item;
     }
 
     /**
@@ -136,7 +139,7 @@ namespace BlazorIntersectionObserverJS {
      */
     export function observe(dotnetRef: IDotNetObjectRef, id: string, node: Element, options: IntersectionObserverInit) {
         const { instance } = getObserverItem(dotnetRef, options);
-        return observeInstanceElement(instance, node, id);
+        return observeInstanceElement(instance, id, node);
     }
 
     /**
@@ -149,7 +152,7 @@ namespace BlazorIntersectionObserverJS {
 
         for (const instance of observers) {
             const elements = instance.elements.get(id);
-
+            
             if (elements != null && !elements.has(element)) {
                 instance.observer.observe(element);
                 elements.add(element);
@@ -248,7 +251,7 @@ namespace BlazorIntersectionObserverJS {
                 }
                 return batched;
             }, {});
-
+            
             Object.keys(observerEntries).forEach((observerId) => {
                 const batch = observerEntries[observerId] as IntersectionObserverEntry[];
                 dotnetRef.invokeMethodAsync("OnCallback", observerId, batch.map(toEntryObject));

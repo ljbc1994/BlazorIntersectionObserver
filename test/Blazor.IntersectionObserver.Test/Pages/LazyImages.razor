@@ -1,0 +1,95 @@
+@page "/lazy-image"
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1>
+            Lazy Image Loading
+        </h1>
+        <p class="lead">
+            This example uses the <code>IntersectionObserve</code> component to check whether the element is
+            in view before attempting to load the image.
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-columns">
+            @foreach (var image in Images)
+            {
+                <div class="card">
+                    <IntersectionObserve Class="image-container" Once=@true>
+                        @{var isIntersecting = (context != null && context.IsIntersecting);}
+                        <div class="image-loader @(isIntersecting ? "image-loader--hide" : "image-loader--show")">Loading...</div>
+                        <img class="image @(isIntersecting ? "image--show" : "image--hide")" src="@(isIntersecting ? image: "")" />
+                    </IntersectionObserve>
+                    <div class="card-body">
+                        <h5 class="card-title">Card title</h5>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    public static int RandomNumber(int min, int max)
+    {
+        return new Random().Next(min, max);
+    }
+
+    public static List<string> Images = Enumerable
+        .Range(1, 15)
+        .Select(x =>
+        {
+            var height = RandomNumber(250, 650);
+            var width = RandomNumber(250, 650);
+            return $"https://www.placehold.it/{width}x{height}";
+        })
+        .ToList();
+}
+
+<style>
+    .image-container {
+        height: 0;
+        overflow: hidden;
+        padding-top: 53%;
+        background: white;
+        position: relative;
+    }
+    .image-loader,
+    .image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: 500ms ease-in-out;
+    }
+    .image-loader {
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e2e2e2;
+    }
+    .image-loader--show {
+        animation: Pulsate 1s ease-in-out infinite;
+    }
+    .image-loader--hide {
+        display: none;
+    }
+    .image--show {
+        opacity: 1;
+    }
+    .image--hide {
+        opacity: 0;
+    }
+    @@keyframes Pulsate {
+        50% {
+            opacity: 0.9;
+        }
+    }
+</style>

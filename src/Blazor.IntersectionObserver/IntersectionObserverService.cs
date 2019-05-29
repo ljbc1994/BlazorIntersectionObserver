@@ -39,7 +39,7 @@ namespace Blazor.IntersectionObserver
         {
             var callbackId = Guid.NewGuid().ToString();
 
-            await this.jsRuntime.InvokeAsync<object>(Constants.CREATE, this.dotnetObjRef, options);
+            await this.jsRuntime.InvokeAsync<object>(Constants.CREATE, this.dotnetObjRef, callbackId, options);
 
             return this.CreateObserver(callbackId, onIntersectUpdate);
         }
