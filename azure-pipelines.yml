@@ -22,7 +22,8 @@ steps:
 
   - task: Npm@1
     inputs:
-      command: 'test'
+      command: 'custom'
+      customCommand: run test
       workingDir: src/Blazor.IntersectionObserver.JS
 
   - task: PublishTestResults@2
