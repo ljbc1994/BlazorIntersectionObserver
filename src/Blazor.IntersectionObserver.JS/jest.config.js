@@ -6,4 +6,7 @@ module.exports = {
         "^.+\\.ts?$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|(\\.|/)).(test|spec).(jsx?|ts?)$",
+    "coverageReporters": [
+        "cobertura"
+    ]
 }

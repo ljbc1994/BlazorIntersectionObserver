@@ -6,7 +6,7 @@
   "main": "index.ts",
   "scripts": {
     "build": "webpack",
-    "test": "jest --ci --reporters=default --reporters=jest-junit",
+    "test": "jest --ci --reporters=default --reporters=jest-junit --coverage --coverageReporters cobertura",
     "test:watch": "npm test -- --watch"
   },
   "author": "Louie Colgan <@ljbc1994>",
