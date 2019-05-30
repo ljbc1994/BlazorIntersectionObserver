@@ -5,6 +5,7 @@
 
 #Test
 coverage
+junit.xml
 
 # User-specific files
 *.rsuser
