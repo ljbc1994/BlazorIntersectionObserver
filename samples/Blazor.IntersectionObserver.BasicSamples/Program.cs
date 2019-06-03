@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Blazor.Hosting;
 
-namespace Blazor.IntersectionObserver.Test
+namespace Blazor.IntersectionObserver.BasicSamples
 {
     public class Program
     {

@@ -28,6 +28,12 @@ steps:
 
   - task: DotNetCoreCLI@2
     inputs:
+      command: test
+      projects: '**/*Test/*.csproj'
+      arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+
+  - task: DotNetCoreCLI@2
+    inputs:
       command: pack
       packagesToPack: 'src/Blazor.IntersectionObserver/*.csproj'
       configuration: '$(buildConfiguration)'

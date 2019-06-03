@@ -11,7 +11,7 @@ namespace Blazor.IntersectionObserver
         /// <summary>
         /// The identifier for the observer instance
         /// </summary>
-        private string Id { get; set; }
+        public string Id { get; private set; }
 
         /// <summary>
         /// On intersection updates, trigger the action

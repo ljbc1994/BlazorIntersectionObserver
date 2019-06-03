@@ -112,7 +112,12 @@ namespace Blazor.IntersectionObserver
         /// <param name="element">The element to unobserve</param>
         private async void Unobserve(string id, ElementRef element)
         {
-            await this.jsRuntime.InvokeAsync<bool>(Constants.UNOBSERVE, id, element);
+            var unobserved = await this.jsRuntime.InvokeAsync<bool>(Constants.UNOBSERVE, id, element);
+
+            if (unobserved)
+            {
+                this.observers.Remove(id);
+            }
         }
 
         /// <summary>
