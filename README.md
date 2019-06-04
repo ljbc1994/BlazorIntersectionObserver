@@ -19,8 +19,6 @@ Install `BlazorIntersectionObserver` through NuGet.
 > dotnet add package BlazorIntersectionObserver
 ```
 
-*OR*
-
 ### 2. Register the service
 
 Now you'll need to add the service to the service configuration.
@@ -53,6 +51,8 @@ object which contains the observer entry! Easy!
     </div>
 </IntersectionObserve>
 ```
+
+*OR*
 
 #### Service setup
 
