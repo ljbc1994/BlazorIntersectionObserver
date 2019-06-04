@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Blazor.IntersectionObserver.Test.Configuration;
 
 namespace Tests
 {
@@ -18,15 +19,24 @@ namespace Tests
         {
             var mockJsRuntime = new Mock<IJSRuntime>();
 
+            mockJsRuntime
+                .Setup(x => x.InvokeAsync<bool>(
+                    Constants.UNOBSERVE,
+                    It.IsAny<string>(),
+                    It.IsAny<ElementRef>()
+                ))
+                .ReturnsAsync(true);
+
             var mockOptions = new IntersectionObserverOptions
             {
                 RootMargin = "10px 10px 10px 10px",
                 Threshold = new List<double> { 0.25, 0.5, 1 }
             };
+            var testElementRef = new ElementRef();
 
             var observerService = new IntersectionObserverService(mockJsRuntime.Object);
             var observer = await observerService.Observe(
-                It.IsAny<ElementRef>(),
+                testElementRef,
                 It.IsAny<Action<IList<IntersectionObserverEntry>>>(),
                 mockOptions
             );
@@ -37,9 +47,9 @@ namespace Tests
 
             mockJsRuntime
                 .Verify(v => v.InvokeAsync<bool>(
-                    "BlazorIntersectionObserverJS.unobserve",
+                    Constants.UNOBSERVE,
                     observerId,
-                    It.IsAny<ElementRef>()
+                    testElementRef
                 ), Times.Once());
         }
 
@@ -47,6 +57,13 @@ namespace Tests
         public async Task DisconnectAnObserverCallbackAndNotifyJSInterop()
         {
             var mockJsRuntime = new Mock<IJSRuntime>();
+
+            mockJsRuntime
+                .Setup(x => x.InvokeAsync<bool>(
+                    Constants.DISCONNECT,
+                    It.IsAny<string>()
+                ))
+                .ReturnsAsync(true);
 
             var mockOptions = new IntersectionObserverOptions();
 
@@ -63,7 +80,7 @@ namespace Tests
 
             mockJsRuntime
                 .Verify(v => v.InvokeAsync<bool>(
-                    "BlazorIntersectionObserverJS.disconnect",
+                    Constants.DISCONNECT,
                     observerId
                 ), Times.Once());
         }
@@ -74,8 +91,17 @@ namespace Tests
             var mockJsRuntime = new Mock<IJSRuntime>();
             var mockOnIntersect = new Mock<Action<IList<IntersectionObserverEntry>>>();
             var testEntries = new List<IntersectionObserverEntry> {
-                new IntersectionObserverEntry { IsVisible = true },
-                new IntersectionObserverEntry { IsIntersecting = true }
+                new IntersectionObserverEntry {
+                    IsVisible = true
+                },
+                new IntersectionObserverEntry {
+                    IsIntersecting = true,
+                    IsVisible = true,
+                    IntersectionRatio = 1.0,
+                    BoundingClientRect = new DOMRectReadOnly(),
+                    RootBounds = new DOMRectReadOnly(),
+                    Target = new ElementRef()
+                }
             };
 
             var mockOptions = new IntersectionObserverOptions();

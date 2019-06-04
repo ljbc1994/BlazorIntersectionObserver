@@ -50,7 +50,7 @@ steps:
     inputs:
       command: test
       projects: '**/*Test/*.csproj'
-      arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+      arguments: '--configuration $(buildConfiguration) --collect "Code coverage" --settings codecoverage.runsettings'
 
   - task: DotNetCoreCLI@2
     inputs:

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.Components;
+using Blazor.IntersectionObserver.Test.Configuration;
 
 namespace Tests
 {
@@ -32,7 +33,7 @@ namespace Tests
 
             mockJsRuntime
                 .Verify(v => v.InvokeAsync<object>(
-                    "BlazorIntersectionObserverJS.create",
+                    Constants.CREATE,
                     It.IsAny<DotNetObjectRef>(),
                     It.IsAny<string>(),
                     testOptions
@@ -49,6 +50,7 @@ namespace Tests
                 RootMargin = "10px 10px 10px 10px"
             };
             var testElement = new ElementRef();
+            var otherTestElement = new ElementRef();
 
             var observerService = new IntersectionObserverService(mockJsRuntime.Object);
             var observer = await observerService.Create(
@@ -59,10 +61,11 @@ namespace Tests
             var observerId = observer.Id;
 
             observer.Observe(testElement);
+            observer.Observe(otherTestElement);
 
             mockJsRuntime
                 .Verify(v => v.InvokeAsync<object>(
-                    "BlazorIntersectionObserverJS.create",
+                    Constants.CREATE,
                     It.IsAny<DotNetObjectRef>(),
                     It.IsAny<string>(),
                     testOptions
@@ -70,10 +73,10 @@ namespace Tests
 
             mockJsRuntime
                 .Verify(v => v.InvokeAsync<object>(
-                    "BlazorIntersectionObserverJS.observeElement",
+                    Constants.OBSERVE_ELEMENT,
                     observerId,
                     testElement
-                ), Times.Once());
+                ), Times.Exactly(2));
         }
 
         [Test]
@@ -100,7 +103,7 @@ namespace Tests
 
             mockJsRuntime
                 .Verify(v => v.InvokeAsync<object>(
-                    "BlazorIntersectionObserverJS.create",
+                    Constants.CREATE,
                     It.IsAny<DotNetObjectRef>(),
                     It.IsAny<string>(),
                     It.IsAny<IntersectionObserverOptions>()
