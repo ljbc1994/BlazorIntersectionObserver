@@ -20,11 +20,37 @@ steps:
       command: 'install'
       workingDir: src/Blazor.IntersectionObserver.JS
 
+  - task: Npm@1
+    inputs:
+      command: 'custom'
+      customCommand: run test
+      workingDir: src/Blazor.IntersectionObserver.JS
+
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testRunner: JUnit
+      testResultsFiles: '**/junit.xml'
+      workingDir: src/Blazor.IntersectionObserver.JS
+
+  - task: PublishCodeCoverageResults@1
+    inputs: 
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
+      reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
+      workingDir: src/Blazor.IntersectionObserver.JS
+
   - task: DotNetCoreCLI@2
     inputs:
       command: 'build'
       projects: '**/*.csproj'
       arguments: '--configuration $(buildConfiguration)'
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      projects: '**/*Test/*.csproj'
+      arguments: '--configuration $(buildConfiguration) --collect "Code coverage" --settings codecoverage.runsettings'
 
   - task: DotNetCoreCLI@2
     inputs:

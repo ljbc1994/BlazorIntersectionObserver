@@ -6,13 +6,18 @@
   "main": "index.ts",
   "scripts": {
     "build": "webpack",
-    "test": "test"
+    "test": "jest --ci --reporters=default --reporters=jest-junit --coverage --coverageReporters cobertura",
+    "test:watch": "npm test -- --watch"
   },
   "author": "Louie Colgan <@ljbc1994>",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "24.0.13",
+    "jest": "24.8.0",
+    "ts-jest": "24.0.2",
     "ts-loader": "4.4.2",
     "typescript": "3.4.5",
+    "jest-junit": "6.4.0",
     "webpack": "4.16.3",
     "webpack-cli": "3.3.2"
   }

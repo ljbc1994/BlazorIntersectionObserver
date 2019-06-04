@@ -1,36 +1,53 @@
-interface IDotNetObjectRef {
+export interface IDotNetObjectRef {
     invokeMethodAsync(methodName: string, ...args: any[]): Promise<any>;
 }
 
-interface IntersectionObserverItem {
+export interface IntersectionObserverItem {
     id: string;
     instance: IntersectionObserverInstance;
 }
 
-interface IntersectionObserverInstance {
+export interface IntersectionObserverInstance {
     dotnetRef: IDotNetObjectRef;
     observer: IntersectionObserver;
     options: IntersectionObserverInit;
     elements: Map<string, Set<Element>>;
 }
 
-interface ElementInstance {
+export interface ElementInstance {
     observers: IntersectionObserverInstance[];
 }
 
-type OnIntersectionUpdateFn = (entries: IntersectionObserverEntry[]) => any;
+export type OnIntersectionUpdateFn = (entries: IntersectionObserverEntry[]) => any;
 
 namespace BlazorIntersectionObserverJS {
 
+    export const OBSERVER_ID_PREFIX = "blazor_plugin_observer__";
+
     let OBSERVER_ID = 1;
 
-    const observerInstances = new Map<string, IntersectionObserverInstance>();
+    const observerItems = new Map<string, IntersectionObserverInstance>();
 
     /**
-     * Generate a unique id for an observer. 
+     * Reset the counter and the observer instances
+     */
+    export function reset() {
+        OBSERVER_ID = 1;
+        observerItems.clear();
+    }
+
+    /**
+     * Get the observer items
+     */
+    export function getObserverItems() {
+        return observerItems;
+    }
+
+    /**
+     * Generate a unique id for an observer item. 
      **/
-    function createObserverId() {
-        return `blazor_plugin_observer__${OBSERVER_ID++}`;
+    function createObserverItemId() {
+        return `${OBSERVER_ID_PREFIX}${OBSERVER_ID++}`;
     }
 
     /**
@@ -53,16 +70,16 @@ namespace BlazorIntersectionObserverJS {
      * @returns {IntersectionObserverItem | null} - The observer item or nothing 
      */
     function getItemFromOptions(options: IntersectionObserverInit): IntersectionObserverItem | null {
-        let instanceFound: (IntersectionObserverItem | null) = null;
+        let itemFound: (IntersectionObserverItem | null) = null;
 
-        for (const [id, instance] of observerInstances) {
+        for (const [id, instance] of observerItems) {
             if (hasSameOptions(options, instance.options)) {
-                instanceFound = { id, instance };
+                itemFound = { id, instance };
                 break;
             }
         }
 
-        return instanceFound;
+        return itemFound;
     }
 
     /**
@@ -72,7 +89,7 @@ namespace BlazorIntersectionObserverJS {
      * @param {string} observerId - The observer id
      * @returns {IntersectionObserverInstance} - The observer instance
      */
-    function observeInstanceElement(instance: IntersectionObserverInstance, element: Element, observerId: string) {
+    function observeInstanceElement(instance: IntersectionObserverInstance, observerId: string, element: Element) {
         const { elements, observer } = instance;
         const observerElements = elements.get(observerId);
 
@@ -100,15 +117,15 @@ namespace BlazorIntersectionObserverJS {
         const observerItem = getItemFromOptions(options);
 
         if (observerItem == null) {
-            const id = createObserverId();
+            const id = createObserverItemId();
             const observer = new IntersectionObserver(onEntryChange(id), options);
             const elements = new Map<string, Set<Element>>();
 
-            observerInstances.set(id, { dotnetRef, options, observer, elements });
+            observerItems.set(id, { dotnetRef, options, observer, elements });
 
             return {
                 id,
-                instance: observerInstances.get(id) as IntersectionObserverInstance
+                instance: observerItems.get(id) as IntersectionObserverInstance
             };
         }
 
@@ -122,8 +139,11 @@ namespace BlazorIntersectionObserverJS {
      * @param {IntersectionObserverInit} options - The intersection obsever options
      * @returns {IntersectionObserverItem} - The observer item
      */
-    export function create(dotnetRef: IDotNetObjectRef, options: IntersectionObserverInit) {
-        return getObserverItem(dotnetRef, options);
+    export function create(dotnetRef: IDotNetObjectRef, id: string, options: IntersectionObserverInit) {
+      const item = getObserverItem(dotnetRef, options);
+      const { instance } = item;
+      instance.elements.set(id, new Set<Element>([]));
+      return item;
     }
 
     /**
@@ -136,7 +156,7 @@ namespace BlazorIntersectionObserverJS {
      */
     export function observe(dotnetRef: IDotNetObjectRef, id: string, node: Element, options: IntersectionObserverInit) {
         const { instance } = getObserverItem(dotnetRef, options);
-        return observeInstanceElement(instance, node, id);
+        return observeInstanceElement(instance, id, node);
     }
 
     /**
@@ -145,11 +165,11 @@ namespace BlazorIntersectionObserverJS {
      * @param element - The element to observe
      */
     export function observeElement(id: string, element: Element) {
-        const observers = observerInstances.values();
+        const instances = observerItems.values();
 
-        for (const instance of observers) {
+        for (const instance of instances) {
             const elements = instance.elements.get(id);
-
+            
             if (elements != null && !elements.has(element)) {
                 instance.observer.observe(element);
                 elements.add(element);
@@ -166,10 +186,10 @@ namespace BlazorIntersectionObserverJS {
      * @returns {boolean} - Whether the element has been unobserved
      */
     export function unobserve(id: string, element: Element) {
-        const observers = observerInstances.values();
+        const instances = observerItems.values();
         let removed = false;
 
-        for (const instance of observers) {
+        for (const instance of instances) {
             const elements = instance.elements.get(id);
 
             if (elements != null && elements.has(element)) {
@@ -191,7 +211,7 @@ namespace BlazorIntersectionObserverJS {
      * been removed from the observer instance
      */
     export function disconnect(id: string) {
-        const observers = observerInstances.entries();
+        const observers = observerItems.entries();
         let disconnected = false;
 
         for (const [instanceId, instance] of observers) {
@@ -210,16 +230,16 @@ namespace BlazorIntersectionObserverJS {
      * If there are no elements in the observer
      * instance, disconnect the observer and remove
      * it from the observer instances.
-     * @param {string} instanceId - The observer instance id
+     * @param {string} itemId - The observer item id
      * @param {IntersectionObserverInstance} instance - The instance to remove
      * @returns {boolean} - Whether the instance has been removed
      */
-    function cleanupObserver(instanceId: string, instance: IntersectionObserverInstance) {
+    function cleanupObserver(itemId: string, instance: IntersectionObserverInstance) {
         let instanceRemoved = false;
 
         if (instance.elements.size === 0) {
             instance.observer.disconnect();
-            observerInstances.delete(instanceId);
+            observerItems.delete(itemId);
             instanceRemoved = true;
         }
 
@@ -234,11 +254,11 @@ namespace BlazorIntersectionObserverJS {
      */
     function onEntryChange(observerInstanceId: string): OnIntersectionUpdateFn {
         return (entries: IntersectionObserverEntry[]) => {
-            if (!observerInstances.has(observerInstanceId)) {
+            if (!observerItems.has(observerInstanceId)) {
                 return;
             }
 
-            const { dotnetRef, elements } = observerInstances.get(observerInstanceId) as IntersectionObserverInstance;
+            const { dotnetRef, elements } = observerItems.get(observerInstanceId) as IntersectionObserverInstance;
 
             const observerEntries = entries.reduce((batched, entry) => {
                 for (const [id, item] of elements) {
@@ -290,3 +310,5 @@ namespace BlazorIntersectionObserverJS {
 if (typeof window !== "undefined") {
     window["BlazorIntersectionObserverJS"] = BlazorIntersectionObserverJS;
 }
+
+export default BlazorIntersectionObserverJS;

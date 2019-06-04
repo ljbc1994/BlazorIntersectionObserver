@@ -2,9 +2,16 @@
 @using Blazor.IntersectionObserver
 @using Blazor.IntersectionObserver.API
 
-<h1>
-    Mozilla Example Implementation
-</h1>
+<div class="row">
+    <div class="col-sm-12">
+        <h1>
+            Mozilla Example Implementation
+        </h1>
+        <p class="lead">
+            This example matches the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API#A_simple_example">mozilla example</a>. This simple example causes a target element to change its color and transparency as it becomes more or less visible.
+        </p>
+    </div>
+</div>
 
 <div class="window">
     <IntersectionObserve Options="@ObserverOptions" Class="box" Style="@BoxStyle" OnChange="@OnIntersectingChanged">

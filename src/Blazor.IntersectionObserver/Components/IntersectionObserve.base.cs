@@ -24,6 +24,8 @@ namespace Blazor.IntersectionObserver.Components
 
         [Parameter] public IntersectionObserverOptions Options { get; set; }
 
+        [Parameter] public bool Once { get; set; }
+
         public ElementRef Element { get; set; }
 
         public IntersectionObserverEntry Entry { get; set; }
@@ -46,19 +48,26 @@ namespace Blazor.IntersectionObserver.Components
             this.Observer = await this.ObserverService.Observe(this.Element, async (entries) =>
             {
                 var entry = entries.FirstOrDefault();
+
                 if (entry != null)
                 {
                     await this.IsIntersectingChanged.InvokeAsync(entry.IsIntersecting);
                     await this.OnChange.InvokeAsync(entry);
                     this.Entry = entry;
                     this.StateHasChanged();
+
+                    if (this.Once && entry.IsIntersecting)
+                    {
+                        this.Observer?.Disconnect();
+                        this.Observer = null;
+                    }
                 }
             }, this.Options);
         }
 
         public void Dispose()
         {
-            this.Observer.Disconnect();
+            this.Observer?.Disconnect();
         }
     }
 }

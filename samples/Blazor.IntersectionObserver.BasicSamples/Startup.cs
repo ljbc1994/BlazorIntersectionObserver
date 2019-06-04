@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blazor.IntersectionObserver.Test
+namespace Blazor.IntersectionObserver.BasicSamples
 {
     public class Startup
     {

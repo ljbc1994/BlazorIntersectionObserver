@@ -36,13 +36,13 @@ namespace Blazor.IntersectionObserver.API
 
         public DOMRectReadOnly() { }
 
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public double Top { get; set; }
-        public double Right { get; set; }
-        public double Bottom { get; set; }
-        public double Left { get; set; }
+        public double X { get; private set; }
+        public double Y { get; private set; }
+        public double Width { get; private set; }
+        public double Height { get; private set; }
+        public double Top { get; private set; }
+        public double Right { get; private set; }
+        public double Bottom { get; private set; }
+        public double Left { get; private set; }
     }
 }
