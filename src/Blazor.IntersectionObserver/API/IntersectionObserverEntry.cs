@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace Blazor.IntersectionObserver.API
 {
     public class IntersectionObserverEntry
     {
-        public ElementRef Target { get; set; }
+        public ElementReference Target { get; set; }
 
         public bool IsIntersecting { get; set; }
 

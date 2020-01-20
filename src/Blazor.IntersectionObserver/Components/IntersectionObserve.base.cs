@@ -1,6 +1,7 @@
 using Blazor.IntersectionObserver.API;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.RenderTree;
+using Microsoft.JSInterop;
 using System;
 using System.Linq;
 
@@ -18,7 +19,7 @@ namespace Blazor.IntersectionObserver.Components
 
         [Parameter] public bool IsIntersecting { get; set; }
 
-        [Parameter] private EventCallback<bool> IsIntersectingChanged { get; set; }
+        [Parameter] public EventCallback<bool> IsIntersectingChanged { get; set; }
 
         [Parameter] public EventCallback<IntersectionObserverEntry> OnChange { get; set; }
 
@@ -26,20 +27,17 @@ namespace Blazor.IntersectionObserver.Components
 
         [Parameter] public bool Once { get; set; }
 
-        public ElementRef Element { get; set; }
+        public ElementReference Element { get; set; }
 
         public IntersectionObserverEntry Entry { get; set; }
 
         private IntersectionObserver Observer { get; set; }
 
-        private bool Observing { get; set; }
-
-        protected override void OnAfterRender()
+        protected override void OnAfterRender(bool firstRender)
         {
-            if (!this.Observing)
+            if (firstRender)
             {
                 this.InitialiseObserver();
-                this.Observing = true;
             }
         }
 

@@ -19,7 +19,7 @@ module.exports = {
         "blazor.intersection-observer": "./src"
     },
     output: {
-        path: path.join(__dirname, "/dist"),
+        path: path.join(__dirname, "/content"),
         filename: "[name].js"
     }
 };

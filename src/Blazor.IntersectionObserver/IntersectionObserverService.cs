@@ -12,7 +12,7 @@ namespace Blazor.IntersectionObserver
     {
         private readonly IJSRuntime jsRuntime;
 
-        private DotNetObjectRef dotnetObjRef;
+        private DotNetObjectReference<IntersectionObserverService> dotnetObjRef;
 
         /// <summary>
         /// Contains a reference of observer instances and their ids.
@@ -22,7 +22,7 @@ namespace Blazor.IntersectionObserver
         public IntersectionObserverService(IJSRuntime jsRuntime)
         {
             this.jsRuntime = jsRuntime;
-            this.dotnetObjRef = new DotNetObjectRef(this);
+            this.dotnetObjRef = DotNetObjectReference.Create(this);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Blazor.IntersectionObserver
         /// <param name="options">The intersection observer options</param>
         /// <returns></returns>
         public async Task<IntersectionObserver> Observe(
-            ElementRef element,
+            ElementReference element,
             Action<IList<IntersectionObserverEntry>> onIntersectUpdate,
             IntersectionObserverOptions options = null
         )
@@ -97,7 +97,7 @@ namespace Blazor.IntersectionObserver
         /// </summary>
         /// <param name="id">The observer instance id</param>
         /// <param name="element">The element to observe</param>
-        private async void ObserveElement(string id, ElementRef element)
+        private async void ObserveElement(string id, ElementReference element)
         {
             if (this.observers.ContainsKey(id))
             {
@@ -110,7 +110,7 @@ namespace Blazor.IntersectionObserver
         /// </summary>
         /// <param name="id">The observer instance id</param>
         /// <param name="element">The element to unobserve</param>
-        private async void Unobserve(string id, ElementRef element)
+        private async void Unobserve(string id, ElementReference element)
         {
             var unobserved = await this.jsRuntime.InvokeAsync<bool>(Constants.UNOBSERVE, id, element);
 

@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="3.0.0-preview5-19227-01" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="3.1.0-preview4.19579.2" PrivateAssets="all" />
     <WebpackInputs Include="**\*.ts" Exclude="dist\**;node_modules\**" />
   </ItemGroup>
 
@@ -25,12 +25,37 @@
     <Exec Command="npm install" />
   </Target>
 
-  <Target Name="RunWebpack" AfterTargets="ResolveReferences" Inputs="@(WebpackInputs)" Outputs="dist\blazor.intersection-observer.js" DependsOnTargets="EnsureNpmRestored">
-    <RemoveDir Directories="dist" />
+  <Target Name="RunWebpack" AfterTargets="ResolveReferences" Inputs="@(WebpackInputs)" Outputs="content\blazor.intersection-observer.js" DependsOnTargets="EnsureNpmRestored">
+    <RemoveDir Directories="content" />
     <Exec Command="npm run build" />
     <ItemGroup>
-      <EmbeddedResource Include="dist\**\*.js" LogicalName="blazor:js:%(RecursiveDir)%(Filename)%(Extension)" />
+      <EmbeddedResource Include="content\**\*.js" LogicalName="blazor:js:%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
+  </Target>
+
+  <Target Name="CopyMissingBlazorContent" BeforeTargets="BlazorCompleteStandalonePublish">
+    <PropertyGroup>
+      <FullPublishDir>$(PublishDir)</FullPublishDir>
+      <FullPublishDir Condition=" $(FullPublishDir.Contains(':')) != 'true' ">$(MSBuildThisFileDirectory)$(PublishDir)</FullPublishDir>
+    </PropertyGroup>
+
+    <Message Text="PublishIntermediateOutputPath: $(PublishIntermediateOutputPath)" Importance="high" />
+    <Message Text="OutDir: $(OutDir)" Importance="high" />
+    <Message Text="BlazorPublishDistDir: $(BlazorPublishDistDir)" Importance="High" />
+    <Message Text="PublishDir: $(PublishDir)" Importance="High" />
+    <Message Text="FullPublishDir: $(FullPublishDir)" Importance="High" />
+
+    <CreateItem Include="$(FullPublishDir)wwwroot\**\*.*">
+      <Output TaskParameter="Include" ItemName="FilesToCopy" />
+    </CreateItem>
+    <Copy SourceFiles="@(FilesToCopy)"
+          DestinationFolder="$(FullPublishDir)$(BlazorPublishDistDir)%(RecursiveDir)"
+          SkipUnchangedFiles="true"
+          OverwriteReadOnlyFiles="true"
+          Retries="3"
+          RetryDelayMilliseconds="300"/>
+    <RemoveDir Directories="$(FullPublishDir)wwwroot" />
+    <Delete Files="$(FullPublishDir)$(BlazorPublishDistDir)**\*.map" />
   </Target>
   
 </Project>

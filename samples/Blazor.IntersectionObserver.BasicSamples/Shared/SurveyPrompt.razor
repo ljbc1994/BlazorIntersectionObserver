@@ -5,20 +5,20 @@
     <p>
         Survey prompt. @(IsIntersecting ? "Intersecting!!" : "Not intersecting!!")
     </p>
-    <button onclick="@(() => SetupObserver())">
+    <button @onclick="@(() => SetupObserver())">
         Start observing
     </button>
 </div>
 
 @functions {
     // Demonstrates how a parent component can supply parameters
-    [Parameter] string Title { get; set; }
+    [Parameter] public string Title { get; set; }
 
-    [Parameter] IntersectionObserverOptions ObserverOptions { get; set; }
+    [Parameter] public IntersectionObserverOptions ObserverOptions { get; set; }
 
     public bool IsIntersecting { get; set; }
 
-    public ElementRef SurveyPromptElement { get; set; }
+    public ElementReference SurveyPromptElement { get; set; }
 
     private IntersectionObserver IntersectionObserver { get; set; }
 
