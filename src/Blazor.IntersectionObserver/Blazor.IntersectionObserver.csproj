@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>Blazor.IntersectionObserver</PackageId>
+    <PackageId>BlazorIntersectionObserver</PackageId>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>8.0</LangVersion>
     <RazorLangVersion>3.0</RazorLangVersion>
@@ -17,6 +17,7 @@
     <Description>Intersection Observer API for Blazor applications</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.0</Version>
+    <Product>BlazorIntersectionObserver</Product>
   </PropertyGroup>
   
   <ItemGroup>

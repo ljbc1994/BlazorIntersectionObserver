@@ -22,7 +22,7 @@ namespace Blazor.IntersectionObserver
 
         public IntersectionObserverService(IJSRuntime jsRuntime)
         {
-            this.moduleTask = jsRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/Blazor.IntersectionObserver/blazor-intersection-observer.js").AsTask();
+            this.moduleTask = jsRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/BlazorIntersectionObserver/blazor-intersection-observer.js").AsTask();
             this.objectRef = DotNetObjectReference.Create(this);
         }
 

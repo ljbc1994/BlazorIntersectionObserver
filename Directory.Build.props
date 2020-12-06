@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Authors>Louie Colgan</Authors>
     <Product>Blazor.IntersectionObserver</Product>
-    <PackageId>Blazor.IntersectionObserver</PackageId>
+    <PackageId>BlazorIntersectionObserver</PackageId>
     <Copyright>Copyright © 2020 - Louie Colgan</Copyright>
     <Summary>Intersection Observer API wrapper for Blazor</Summary>
     <PackageProjectUrl>https://github.com/ljbc1994/Blazor.IntersectionObserver</PackageProjectUrl>

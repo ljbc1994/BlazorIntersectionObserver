@@ -16,7 +16,7 @@ This is a wrapper around the [Intersection Observer API](https://developer.mozil
 Install `BlazorIntersectionObserver` through NuGet.
 
 ```bash
-> dotnet add package Blazor.IntersectionObserver
+> dotnet add package BlazorIntersectionObserver
 ```
 
 ### 2. Register the service
