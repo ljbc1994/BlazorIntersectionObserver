@@ -18,6 +18,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.0</Version>
     <Product>BlazorIntersectionObserver</Product>
+    <PackageReleaseNotes>06/12/2020
+- Updated project to use dotnet 5</PackageReleaseNotes>
+    <PackageLicenseFile>LICENCE.txt</PackageLicenseFile>
   </PropertyGroup>
   
   <ItemGroup>
@@ -74,5 +77,12 @@
     <EmbeddedResource Update="wwwroot\blazor-intersection-observer.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENCE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>
