@@ -10,10 +10,11 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-  - task: DotNetCoreInstaller@0
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core SDK'
     inputs:
       packageType: 'sdk'
-      version: '5.0.100'
+      version: '5.0.x'
 
   - task: Npm@1
     inputs:
