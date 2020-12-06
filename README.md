@@ -23,11 +23,25 @@ Install `BlazorIntersectionObserver` through NuGet.
 
 Now you'll need to add the service to the service configuration.
 
-```cs
-using Blazor.IntersectionObserver;
+#### WebAssembly (Program.cs)
 
-public class Startup
+```cs
+public class Program
 {
+    public static async Task Main(string[] args)
+    {
+        var builder = WebAssemblyHostBuilder.CreateDefault(args);
+        builder.Services.AddIntersectionObserver();
+    }
+}
+```
+
+*OR*
+
+#### Server (Startup.cs)
+
+```cs
+public class Startup {
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddIntersectionObserver();
@@ -43,11 +57,11 @@ object which contains the observer entry! Easy!
 #### Component setup
 
 ```razor
-@using Blazor.IntersectionObserver.Components
+@using Blazor.IntersectionObserver
 
 <IntersectionObserve>
     <div>
-        Hey... look I'm @(context?.IsIntersecting ? "in view": "out of view")
+        Hey... look I'm @(context != null && context.IsIntersecting ? "in view": "out of view")
     </div>
 </IntersectionObserve>
 ```
@@ -65,14 +79,14 @@ To directly use the service, you just need to inject it and observe the element(
 <img ref="ImageElement" src="@(IsIntersecting ? "https://www.placecage.com/g/500/500" : "")"/>
 
 @functions {
-    public ElementRef ImageElement { get; set; }
+    public ElementReference ImageElement { get; set; }
     public bool IsIntersecting { get; set; }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender) 
         {
-            SetupObserver();
+            await SetupObserver();
         }
     }
 
@@ -116,7 +130,7 @@ This a shorthand way of observing an element by providing:
 This returns an `IntersectionObserver` instance, allowing you to `disconnect` the observer or `unobserve` an element. Or if you wish, observe additional elements.
 
 ```cs
-var observer = ObserverService.Observe(ElementRef, (entries) => {
+var observer = await ObserverService.Observe(ElementRef, (entries) => {
     IsIntersecting = entries.FirstOrDefault().IsIntersecting;
     StateHasChanged();
 }, options);
@@ -132,13 +146,13 @@ The `Create` method follows the same approach as the Intersection Observer API, 
 This returns an `IntersectionObserver` instance, allowing you to `Observe` elements. This also provides the ability to `disconnect` or `unobserve` the element.
 
 ```cs
-var observer = ObserverService.Create((entries) => {
+var observer = await ObserverService.Create((entries) => {
     IsIntersecting = entries.FirstOrDefault().IsIntersecting;
     StateHasChanged();
 }, options);
 
-observer.Observe(FirstImage);
-observer.Unobserve(FirstImage);
+await observer.Observe(FirstImage);
+await observer.Unobserve(FirstImage);
 ```
 
 ### `IntersectionObserver` Methods
@@ -148,14 +162,14 @@ observer.Unobserve(FirstImage);
 To observe an element, provide the element reference to the `IntersectionObserver` instance by calling `Observe`.
 
 ```cs
-observer.Observe(ElementRef);
+observer.Observe(ElementReference);
 ```
 
 #### `Unobserve`
 To unobserve an element, provide the element reference to the `IntersectionObserver` instance by calling `Unobserve`.
 
 ```cs
-observer.Unobserve(ElementRef);
+observer.Unobserve(ElementReference);
 ```
 
 #### `Disconnect`
@@ -200,7 +214,7 @@ Rather than directly interfacing with the service, you can use this convenience 
 
 <IntersectionObserve>
     <div>
-        Hey... look I'm @(context?.IsIntersecting ? "intersecting!": "not intersecting!")
+        Hey... look I'm @(context != null && context.IsIntersecting ? "intersecting!": "not intersecting!")
     </div>
 </IntersectionObserve>
 
@@ -216,6 +230,25 @@ Rather than directly interfacing with the service, you can use this convenience 
 - `Style` (`string`) - The style for the element.
 - `Class` (`string`) - The class for the element.
 
+#### Context 
+The context is the `IntersectionObserverEntry` object, with the following signature:
+
+```cs
+public class IntersectionObserverEntry
+{
+    public bool IsIntersecting { get; set; }
+
+    public double IntersectionRatio { get; set; }
+
+    public DOMRectReadOnly BoundingClientRect { get; set; }
+
+    public DOMRectReadOnly RootBounds { get; set; }
+
+    public bool IsVisible { get; set; }
+
+    public double Time { get; set; }
+}
+```
 
 ## Implementation Detail
 To avoid creating an unnecessary number of observers for every element being observed, if a `Blazor Observer` shares exactly the same options as another, they will both use the same `IntersectionObserver` instance in JS. As each `Blazor Observer` has a unique id and callback, the elements that are being observed will still be passed to their respective `Blazor Observer`.
