@@ -8,21 +8,22 @@ using System.Threading.Tasks;
 
 namespace Blazor.IntersectionObserver
 {
-    public class IntersectionObserverService
+    public class IntersectionObserverService: IIntersectionObserverService, IAsyncDisposable
     {
-        private readonly IJSRuntime jsRuntime;
+        private readonly Task<IJSObjectReference> moduleTask;
 
-        private DotNetObjectReference<IntersectionObserverService> dotnetObjRef;
+        private DotNetObjectReference<IntersectionObserverService> objectRef;
 
         /// <summary>
         /// Contains a reference of observer instances and their ids.
         /// </summary>
         private readonly IDictionary<string, IntersectionObserver> observers = new Dictionary<string, IntersectionObserver>();
 
+
         public IntersectionObserverService(IJSRuntime jsRuntime)
         {
-            this.jsRuntime = jsRuntime;
-            this.dotnetObjRef = DotNetObjectReference.Create(this);
+            this.moduleTask = jsRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/Blazor.IntersectionObserver/blazor-intersection-observer.js").AsTask();
+            this.objectRef = DotNetObjectReference.Create(this);
         }
 
         /// <summary>
@@ -37,9 +38,11 @@ namespace Blazor.IntersectionObserver
             IntersectionObserverOptions options = null
         )
         {
+            var module = await this.moduleTask;
+
             var callbackId = Guid.NewGuid().ToString();
 
-            await this.jsRuntime.InvokeAsync<object>(Constants.CREATE, this.dotnetObjRef, callbackId, options);
+            await module.InvokeAsync<object>(Constants.CREATE, this.objectRef, callbackId, options);
 
             return this.CreateObserver(callbackId, onIntersectUpdate);
         }
@@ -58,9 +61,11 @@ namespace Blazor.IntersectionObserver
             IntersectionObserverOptions options = null
         )
         {
+            var module = await this.moduleTask;
+
             var callbackId = Guid.NewGuid().ToString();
 
-            await this.jsRuntime.InvokeAsync<object>(Constants.OBSERVE, this.dotnetObjRef, callbackId, element, options);
+            await module.InvokeAsync<object>(Constants.OBSERVE, this.objectRef, callbackId, element, options);
 
             return this.CreateObserver(callbackId, onIntersectUpdate);
         }
@@ -97,11 +102,13 @@ namespace Blazor.IntersectionObserver
         /// </summary>
         /// <param name="id">The observer instance id</param>
         /// <param name="element">The element to observe</param>
-        private async void ObserveElement(string id, ElementReference element)
+        private async ValueTask ObserveElement(string id, ElementReference element)
         {
             if (this.observers.ContainsKey(id))
             {
-                await this.jsRuntime.InvokeAsync<object>(Constants.OBSERVE_ELEMENT, id, element);
+                var module = await this.moduleTask;
+
+                await module.InvokeAsync<object>(Constants.OBSERVE_ELEMENT, id, element);
             }
         }
 
@@ -110,9 +117,11 @@ namespace Blazor.IntersectionObserver
         /// </summary>
         /// <param name="id">The observer instance id</param>
         /// <param name="element">The element to unobserve</param>
-        private async void Unobserve(string id, ElementReference element)
+        private async ValueTask Unobserve(string id, ElementReference element)
         {
-            var unobserved = await this.jsRuntime.InvokeAsync<bool>(Constants.UNOBSERVE, id, element);
+            var module = await this.moduleTask;
+
+            var unobserved = await module.InvokeAsync<bool>(Constants.UNOBSERVE, id, element);
 
             if (unobserved)
             {
@@ -124,14 +133,25 @@ namespace Blazor.IntersectionObserver
         /// Disconnect the observer instance
         /// </summary>
         /// <param name="id">The observer instance id</param>
-        private async void Disconnect(string id)
+        private async ValueTask Disconnect(string id)
         {
-            var disconnected = await this.jsRuntime.InvokeAsync<bool>(Constants.DISCONNECT, id);
+            var module = await this.moduleTask;
+
+            var disconnected = await module.InvokeAsync<bool>(Constants.DISCONNECT, id);
 
             if (disconnected)
             {
                 this.observers.Remove(id);
             }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            this.objectRef?.Dispose();
+
+            var module = await this.moduleTask;
+
+            await module.DisposeAsync();
         }
     }
 }

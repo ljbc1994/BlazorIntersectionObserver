@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Blazor.IntersectionObserver
 {
@@ -22,17 +23,17 @@ namespace Blazor.IntersectionObserver
         /// <summary>
         /// On unobserving an element, trigger the action
         /// </summary>
-        private event Action<string, ElementReference> OnObserve;
+        private event Func<string, ElementReference, ValueTask> OnObserve;
 
         /// <summary>
         /// On unobserving an element, trigger the action
         /// </summary>
-        private event Action<string, ElementReference> OnUnobserve;
+        private event Func<string, ElementReference, ValueTask> OnUnobserve;
 
         /// <summary>
         /// On disconnecting the observer, trigger the action
         /// </summary>
-        private event Action<string> OnDisconnect;
+        private event Func<string, ValueTask> OnDisconnect;
 
         /// <summary>
         /// Initialise the intersection observer with the
@@ -45,9 +46,9 @@ namespace Blazor.IntersectionObserver
         public IntersectionObserver(
             string id,
             Action<IList<IntersectionObserverEntry>> onIntersectUpdate,
-            Action<string, ElementReference> onObserve,
-            Action<string, ElementReference> onUnobserve,
-            Action<string> onDisconnect
+            Func<string, ElementReference, ValueTask> onObserve,
+            Func<string, ElementReference, ValueTask> onUnobserve,
+            Func<string, ValueTask> onDisconnect
         )
         {
             this.Id = id;
@@ -75,9 +76,9 @@ namespace Blazor.IntersectionObserver
         /// reference to the action(s).
         /// </summary>
         /// <param name="elementRef">The element to observe</param>
-        public void Observe(ElementReference elementRef)
+        public async ValueTask Observe(ElementReference elementRef)
         {
-            OnObserve?.Invoke(this.Id, elementRef);
+            await (OnObserve.Invoke(this.Id, elementRef));
         }
 
         /// <summary>
@@ -85,18 +86,18 @@ namespace Blazor.IntersectionObserver
         /// reference to the action(s).
         /// </summary>
         /// <param name="elementRef">The element to unobserve</param>
-        public void Unobserve(ElementReference elementRef)
+        public async ValueTask Unobserve(ElementReference elementRef)
         {
-            OnUnobserve?.Invoke(this.Id, elementRef);
+            await (OnUnobserve.Invoke(this.Id, elementRef));
         }
 
         /// <summary>
         /// On disconnecting the observer, trigger
         /// the action(s).
         /// </summary>
-        public void Disconnect()
+        public async ValueTask Disconnect()
         {
-            OnDisconnect?.Invoke(this.Id);
+            await (OnDisconnect.Invoke(this.Id));
         }
     }
 }

@@ -1,37 +1,77 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <PackageId>BlazorIntersectionObserver</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>7.3</LangVersion>
+    <PackageId>Blazor.IntersectionObserver</PackageId>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
     <RazorLangVersion>3.0</RazorLangVersion>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <IsPackable>true</IsPackable>
     <Title>Blazor Intersection Observer</Title>
     <Description>Intersection Observer API for Blazor applications</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0</Version>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeJSOutput</TargetsForTfmSpecificBuildOutput>
-  </PropertyGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.0-preview1.19508.20" />
+    <SupportedPlatform Include="browser" />
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  
   <ItemGroup>
-    <ProjectReference Include="..\Blazor.IntersectionObserver.JS\Blazor.IntersectionObserver.JS.csproj" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.0" />
+    <PackageReference Include="Microsoft.JSInterop" Version="5.0.0" />
   </ItemGroup>
+  
+  <Target Name="EnsureNpmRestored" Condition="!Exists('node_modules')">
+    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+    <Exec Command="npm install" />
+  </Target>
 
-  <Target Name="IncludeJSOutput">
+  <Target Name="RunWebpack" AfterTargets="ResolveReferences" Inputs="@(WebpackInputs)" Outputs="wwwroot\blazor-intersection-observer.js" DependsOnTargets="EnsureNpmRestored">
+    <RemoveDir Directories="wwwroot" />
+    <Exec Command="npm run build" />
     <ItemGroup>
-      <BuildOutputInPackage Include="$(OutputPath)Blazor.IntersectionObserver.JS.dll" />
+      <EmbeddedResource Include="wwwroot\**\*.js" LogicalName="blazor:js:%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
   </Target>
 
   <ItemGroup>
-    <Content Update="*.razor">
-      <Pack>false</Pack>
+    <!-- .js/.css files will be referenced via <script>/<link> tags; other content files will just be included in the app's 'dist' directory without any tags referencing them -->
+    <EmbeddedResource Include="wwwroot\**\*.js" LogicalName="blazor:js:%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="wwwroot\**\*.css" LogicalName="blazor:css:%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="wwwroot\**" Exclude="**\*.js;**\*.css" LogicalName="blazor:file:%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="package-lock.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
+    <Content Update="package.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="tsconfig.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="wwwroot\blazor-intersection-observer.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

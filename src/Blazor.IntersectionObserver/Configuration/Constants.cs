@@ -2,16 +2,14 @@ namespace Blazor.IntersectionObserver.Configuration
 {
     internal static class Constants
     {
-        public const string NAMESPACE = "BlazorIntersectionObserverJS";
+        public static string CREATE = $"create";
 
-        public static string CREATE = $"{NAMESPACE}.create";
+        public static string OBSERVE = $"observe";
 
-        public static string OBSERVE = $"{NAMESPACE}.observe";
+        public static string UNOBSERVE = $"unobserve";
 
-        public static string UNOBSERVE = $"{NAMESPACE}.unobserve";
+        public static string DISCONNECT = $"disconnect";
 
-        public static string DISCONNECT = $"{NAMESPACE}.disconnect";
-
-        public static string OBSERVE_ELEMENT = $"{NAMESPACE}.observeElement";
+        public static string OBSERVE_ELEMENT = $"observeElement";
     }
 }
