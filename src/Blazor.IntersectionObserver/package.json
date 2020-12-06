@@ -1,7 +1,7 @@
 {
   "name": "blazor.intersectionobserver",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Intersection Observer wrapper for Blazor",
   "main": "index.ts",
   "scripts": {

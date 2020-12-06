@@ -16,7 +16,7 @@
     <Title>Blazor Intersection Observer</Title>
     <Description>Intersection Observer API for Blazor applications</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Product>BlazorIntersectionObserver</Product>
     <PackageReleaseNotes>06/12/2020
 - Updated project to use dotnet 5</PackageReleaseNotes>
