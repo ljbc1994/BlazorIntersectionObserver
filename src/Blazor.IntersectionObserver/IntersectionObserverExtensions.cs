@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Blazor.IntersectionObserver
 {
@@ -6,7 +6,7 @@ namespace Blazor.IntersectionObserver
     {
         public static IServiceCollection AddIntersectionObserver(this IServiceCollection services)
         {
-            return services.AddSingleton<IntersectionObserverService>();
+            return services.AddScoped<IIntersectionObserverService, IntersectionObserverService>();
         }
     }
 }

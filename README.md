@@ -7,7 +7,7 @@
 
 > A comprehensive wrapper around the Intersection Observer API, giving you all the goodness of observing intersections in a performant way.
 
-This is a wrapper around the [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) so that you can use it in `Blazor`. It has the same API structure with convenience methods and components for a better dev experience.
+This is a wrapper around the [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) so that you can use it in `Blazor` for .NET 5. It has the same API structure with convenience methods and components for a better dev experience. It works with both Blazor WebAssembly and Blazor Server. 
 
 ## Get Started
 
@@ -47,7 +47,7 @@ object which contains the observer entry! Easy!
 
 <IntersectionObserve>
     <div>
-        Hey... look I'm @(context?.IsIntersecting ? "intersecting!": "not intersecting!")
+        Hey... look I'm @(context?.IsIntersecting ? "in view": "out of view")
     </div>
 </IntersectionObserve>
 ```
@@ -67,11 +67,10 @@ To directly use the service, you just need to inject it and observe the element(
 @functions {
     public ElementRef ImageElement { get; set; }
     public bool IsIntersecting { get; set; }
-    public bool HasObserver { get; set; }
     
-    protected override void OnAfterRender() 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!HasObserver) 
+        if (firstRender) 
         {
             SetupObserver();
         }
@@ -79,8 +78,6 @@ To directly use the service, you just need to inject it and observe the element(
 
     public async void SetupObserver()
     {
-        HasObserver = true;
-
         await ObserverService.Observe(ImageElement, (entries) =>
         {
             var entry = entries.FirstOrDefault();
@@ -172,7 +169,7 @@ This is a useful method to clean up observers when components are disposed of, i
 
 ```razor
 @using Blazor.IntersectionObserver
-@implements IDisposable
+@implements IAsyncDisposable
 @inject IntersectionObserverService ObserverService
 
 <div ref="NicolasCageRef"></div>
@@ -180,9 +177,13 @@ This is a useful method to clean up observers when components are disposed of, i
 @functions {
     private IntersectionObserver Observer;
     @* Code... *@
-    public void Dispose()
+
+    public async ValueTask DisposeAsync()
     {
-        Observer.Disconnect();
+        if (this.Observer != null)
+        {
+            await this.Observer.Disconnect();
+        }
     }
 }
 
@@ -221,10 +222,6 @@ To avoid creating an unnecessary number of observers for every element being obs
 
 ## Feature Requests
 There's so much that `IntersectionObserver` can do, so if you have any requests or you want better documentation and examples, feel free to make a pull request or create an issue!
-
-## Credit
-
-- [Blazor Extensions](https://github.com/BlazorExtensions) - They have a great way of setting up a blazor library, check their repos out!
 
 
 
