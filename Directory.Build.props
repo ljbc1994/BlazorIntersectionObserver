@@ -6,10 +6,10 @@
     <PackageId>BlazorIntersectionObserver</PackageId>
     <Copyright>Copyright © 2020 - Louie Colgan</Copyright>
     <Summary>Intersection Observer API wrapper for Blazor</Summary>
-    <PackageProjectUrl>https://github.com/ljbc1994/Blazor.IntersectionObserver</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/ljbc1994/BlazorIntersectionObserver</PackageProjectUrl>
     <PackageTags>Microsoft ASP.NET Core Blazor Intersection Observer</PackageTags>
-    <RepositoryUrl>https://github.com/ljbc1994/Blazor.IntersectionObserver</RepositoryUrl>
-    <LicenseUrl>https://github.com/ljbc1994/Blazor.IntersectionObserver/blob/master/LICENCE</LicenseUrl>
+    <RepositoryUrl>https://github.com/ljbc1994/BlazorIntersectionObserver</RepositoryUrl>
+    <LicenseUrl>https://github.com/ljbc1994/BlazorIntersectionObserver/blob/master/LICENCE</LicenseUrl>
     <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes></PackageReleaseNotes>
