@@ -74,7 +74,7 @@ To directly use the service, you just need to inject it and observe the element(
 
 ```razor
 @using Blazor.IntersectionObserver
-@inject IntersectionObserverService ObserverService
+@inject IIntersectionObserverService ObserverService
 
 <img @ref="ImageElement" src="@(IsIntersecting ? "https://www.placecage.com/g/500/500" : "")"/>
 
@@ -184,7 +184,7 @@ This is a useful method to clean up observers when components are disposed of, i
 ```razor
 @using Blazor.IntersectionObserver
 @implements IAsyncDisposable
-@inject IntersectionObserverService ObserverService
+@inject IIntersectionObserverService ObserverService
 
 <div @ref="NicolasCageRef"></div>
 
