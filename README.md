@@ -61,7 +61,7 @@ object which contains the observer entry! Easy!
 
 <IntersectionObserve>
     <div @ref="context.Ref.Current">
-        Hey... look I'm @((context?.IsIntersecting ?? false) ? "in view": "out of view")
+        Hey... I'm @(context.IsIntersecting ? "in view": "out of view")
     </div>
 </IntersectionObserve>
 ```
@@ -247,7 +247,7 @@ You need to make sure to provide the reference of the element you want to observ
 
 <IntersectionObserve>
     <div @ref="context.Ref.Current">
-        Hey... look I'm @((context?.IsIntersecting ?? false) ? "intersecting!": "not intersecting!")
+        Hey... look I'm @(context.IsIntersecting ? "intersecting!": "not intersecting!")
     </div>
 </IntersectionObserve>
 

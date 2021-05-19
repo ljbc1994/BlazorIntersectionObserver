@@ -22,7 +22,7 @@
                 <div class="card" @key="image">
                     <IntersectionObserve Once=@true>
                         <div class="image-container" @ref="context.Ref.Current">
-                            @{var isIntersecting = (context?.IsIntersecting ?? false);}
+                            @{var isIntersecting = context.IsIntersecting;}
                             <div class="image-loader @(isIntersecting ? "image-loader--hide" : "image-loader--show")">Loading...</div>
                             <img class="image @(isIntersecting ? "image--show" : "image--hide")" src="@(isIntersecting ? image: "")" />
                         </div>
