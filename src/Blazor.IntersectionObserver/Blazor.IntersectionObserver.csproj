@@ -16,11 +16,17 @@
     <Title>Blazor Intersection Observer</Title>
     <Description>Intersection Observer API for Blazor applications</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.0</Version>
+    <Version>2.0.0</Version>
     <Product>BlazorIntersectionObserver</Product>
-    <PackageReleaseNotes>06/12/2020
+    <PackageReleaseNotes>
+19/05/2021
+- *BREAKING CHANGE* The IntersectionObserve component now requires a reference to the node it's observing.
+- The imported observer script is now minified.
+
+06/12/2020
 - Updated project to use dotnet 5</PackageReleaseNotes>
     <PackageLicenseFile>LICENCE.txt</PackageLicenseFile>
+    <Copyright>Copyright © 2021 - Louie Colgan</Copyright>
   </PropertyGroup>
   
   <ItemGroup>
