@@ -1,8 +1,5 @@
 import * as ObserverJS from "../src/index";
-import { getMockElement } from "./utils/document";
-import { getSetValueFirstOrDefault } from "./utils/iterable";
 import { getObserverEntry } from "./data/index";
-import { getObserverItemId } from "./utils/config";
 
 declare var window: any;
 
@@ -10,202 +7,209 @@ const observe = jest.fn();
 const unobserve = jest.fn();
 const disconnect = jest.fn();
 let onEntryChangeCallback: ObserverJS.OnIntersectionUpdateFn | null;
+let observerOptions: IntersectionObserverInit | null;
 
 const mockDotNetRef = {
-    invokeMethodAsync: jest.fn()
+  invokeMethodAsync: jest.fn(),
 };
 
-window.IntersectionObserver = jest.fn(function(fn) {
-    onEntryChangeCallback = fn;
-    return {
-        observe, 
-        unobserve, 
-        disconnect
-    };
+window.IntersectionObserver = jest.fn(function (fn, options) {
+  onEntryChangeCallback = fn;
+  observerOptions = options;
+  return {
+    observe,
+    unobserve,
+    disconnect,
+  };
 });
 
 beforeEach(() => {
-    ObserverJS.reset();
-    observe.mockReset();
-    unobserve.mockReset();
-    disconnect.mockReset();
-    mockDotNetRef.invokeMethodAsync.mockReset();
-    onEntryChangeCallback = null;
+  ObserverJS.reset();
+  observe.mockReset();
+  unobserve.mockReset();
+  disconnect.mockReset();
+  mockDotNetRef.invokeMethodAsync.mockReset();
+  onEntryChangeCallback = null;
+  observerOptions = null;
 });
 
 describe("when creating an observer", () => {
+  it("should create a new observer item", () => {
+    const callbackId = "1";
 
-    test("should create a new observer instance to a observer item", () => {
-        const observerId = "1";
-        const response = ObserverJS.create(mockDotNetRef, observerId, {});
-        const elements = response.instance.elements.get(observerId);
-        const instances = ObserverJS.getObserverItems();
+    ObserverJS.create(mockDotNetRef, callbackId);
 
-        expect(instances.size).toBe(1);
-        expect(elements).toBeDefined();
-        !!elements && expect(elements.size).toBe(0);
-    });
-    
-    test("should create new observer instances to a single observer item", () => {
-        const observerIds = ["1", "2"];
-        
-        observerIds.forEach((id) => {
-            ObserverJS.create(mockDotNetRef, id, {});
-        });
+    const items = ObserverJS.getObserverItems();
 
-        const items = ObserverJS.getObserverItems();
-        const instance = items.get(getObserverItemId(observerIds[0]));
+    expect(items.size).toBe(1);
+  });
 
-        expect(items.size).toBe(1);
-        expect(instance).toBeDefined();
-        !!instance && expect(instance.elements.size).toBe(2);
-    });
+  it("should create multiple observer items", () => {
+    const callbackIds = ["1", "2"];
 
-    test("should create new observer instances to multiple observer items", () => {
-        const observers: Array<{ id: string, options: IntersectionObserverInit }> = [
-            { id: "1", options: { rootMargin: "10px" } },
-            { id: "2", options: { rootMargin: "11px" } }
-        ];
+    callbackIds.forEach((id) => ObserverJS.create(mockDotNetRef, id));
 
-        observers.forEach(({ id, options }) => {
-            ObserverJS.create(mockDotNetRef, id, options);
-        });
+    const items = ObserverJS.getObserverItems();
 
-        const items = ObserverJS.getObserverItems();
-        
-        expect(items.size).toBe(2);
-    });
-    
-    test("should create a new observer instance with elements", () => {
-        const observerId = "1";
-        const mockDiv = getMockElement("div");
-        const mockSpan = getMockElement("span");
+    expect(items.size).toBe(2);
+  });
 
-        const item = ObserverJS.create(mockDotNetRef, observerId, {});
+  it("should create an observer item and observe elements", () => {
+    const callbackId = "1";
 
-        ObserverJS.observeElement(observerId, mockDiv);
-        ObserverJS.observeElement(observerId, mockDiv);
-        ObserverJS.observeElement(observerId, mockSpan);
-        const elements = item.instance.elements.get(observerId)
+    ObserverJS.create(mockDotNetRef, callbackId);
 
-        expect(elements).toBeDefined();
-        expect(observe).toBeCalledTimes(2);
-        !!elements && expect(elements.has(mockDiv)).toBeTruthy();
-        !!elements && expect(elements.has(mockSpan)).toBeTruthy();
-    });
+    const mockDiv = document.createElement("div");
+    const mockSpan = document.createElement("span");
 
+    const observeElementId1 = ObserverJS.observeElement(callbackId, mockDiv);
+    const observeElementId2 = ObserverJS.observeElement(callbackId, mockSpan);
+
+    expect(observe).toBeCalledTimes(2);
+    expect(observeElementId1).toBe(`${ObserverJS.OBSERVER_ID_PREFIX}0`);
+    expect(observeElementId2).toBe(`${ObserverJS.OBSERVER_ID_PREFIX}1`);
+  });
 });
 
 describe("when observing an element", () => {
+  it("should create an observer item and immediately observe the element", () => {
+    const callbackId = "1";
+    const mockDiv = document.createElement("div");
 
-    it("should create an observer instance and immediately observe the element", () => {
-        const observerId = "1";
-        const mockDiv = getMockElement("div");
+    const observeElementId = ObserverJS.observe(
+      mockDotNetRef,
+      callbackId,
+      mockDiv
+    );
 
-        ObserverJS.observe(mockDotNetRef, observerId, mockDiv, {});
+    const items = ObserverJS.getObserverItems();
 
-        const items = ObserverJS.getObserverItems();
+    expect(items.size).toBe(1);
+    expect(observe).toBeCalledTimes(1);
+    expect(observeElementId).toBe(`${ObserverJS.OBSERVER_ID_PREFIX}0`);
+  });
 
-        expect(items.size).toBe(1);
-        expect(observe).toBeCalledTimes(1);
-    });
+  it("should observe the element within a threshold", () => {
+    const callbackId = "1";
+    const mockDiv = document.createElement("div");
+    const definedOptions = { threshold: 0.5 };
 
-    it("should create one observer instance and observe elements", () => {
-        const observerId = "1";
-        const observers: Array<{ id: string, el: HTMLElement, options: IntersectionObserverInit }> = [
-            { id: observerId, el: document.createElement("div"), options: { rootMargin: "10px" } },
-            { id: observerId, el: document.createElement("span"), options: { rootMargin: "10px" } }
-        ];
+    ObserverJS.observe(mockDotNetRef, callbackId, mockDiv, definedOptions);
 
-        const instanceRef: ObserverJS.IntersectionObserverInstance[] = [];
+    const items = ObserverJS.getObserverItems();
 
-        observers.forEach(({ id, el, options }) => {
-            const ref = ObserverJS.observe(mockDotNetRef, id, el, options);
-            instanceRef.push(ref);
-        });
+    expect(items.size).toBe(1);
+    expect(observe).toBeCalledTimes(1);
+    expect(observerOptions).toBe(definedOptions);
+  });
 
-        const items = ObserverJS.getObserverItems();
-        const [lastInstance] = instanceRef;
-        const lastInstanceElements = lastInstance.elements.get(observerId);
+  it("should throw an error if the observer item does not exist", () => {
+    const callbackId = "1";
+    const mockDiv = document.createElement("div");
 
-        expect(items.size).toBe(1);
-        lastInstanceElements && expect(lastInstanceElements.size).toBe(2);
-    });
-
+    expect(() => {
+      ObserverJS.observeElement(callbackId, mockDiv);
+    }).toThrowError();
+  });
 });
 
 describe("when unobserving an element", () => {
+  it("should unobserve an element for an observer item", () => {
+    const callbackId = "1";
+    const mockDiv = document.createElement("div");
 
-    it("should create an observer instance and unobserve an element", () => {
-        const observerId = "1";
-        const mockDiv = getMockElement("div");
+    ObserverJS.observe(mockDotNetRef, callbackId, mockDiv);
+    const removedElementId = ObserverJS.unobserve(callbackId, mockDiv);
 
-        ObserverJS.observe(mockDotNetRef, observerId, mockDiv, {});
-        const removed = ObserverJS.unobserve(observerId, mockDiv);
+    const items = ObserverJS.getObserverItems();
+    const instance = items.get(callbackId);
 
-        const items = ObserverJS.getObserverItems();
-        const instance = items.get(getObserverItemId(observerId));
+    expect(unobserve).toHaveBeenCalledTimes(1);
+    expect(items.size).toBe(1);
+    expect(instance).toBeDefined();
+    expect(removedElementId).toBe(`${ObserverJS.OBSERVER_ID_PREFIX}0`);
+  });
 
-        expect(unobserve).toHaveBeenCalledTimes(1);
-        expect(removed).toBeTruthy();
-        expect(items.size).toBe(1);
-        expect(instance).toBeDefined();
-        !!instance && expect(getSetValueFirstOrDefault(instance.elements).size).toBe(0);
-    });
+  it("should throw an error if the observer item does not exist", () => {
+    const callbackId = "1";
+    const mockDiv = document.createElement("div");
 
+    expect(() => {
+      ObserverJS.unobserve(callbackId, mockDiv);
+    }).toThrowError();
+  });
 });
 
 describe("when disconnecting an observer", () => {
+  it("should disconnect an observer for observer item", () => {
+    const callbackId = "1";
+    const mockDiv = document.createElement("div");
 
-    it("should disconnect an observer", () => {
-        const observerId = "1";
-        const mockDiv = getMockElement("div");
-        
-        ObserverJS.observe(mockDotNetRef, observerId, mockDiv, {});
-        ObserverJS.disconnect(observerId);
+    ObserverJS.observe(mockDotNetRef, callbackId, mockDiv);
+    ObserverJS.disconnect(callbackId);
 
-        const items = ObserverJS.getObserverItems();
+    expect(disconnect).toHaveBeenCalledTimes(1);
+  });
 
-        expect(disconnect).toHaveBeenCalledTimes(1);
-        expect(items.size).toBe(0);
-    });
+  it("should throw an error if the observer item does not exist", () => {
+    const callbackId = "1";
 
+    expect(() => {
+      ObserverJS.disconnect(callbackId);
+    }).toThrowError();
+  });
+});
+
+describe("when removing an observer item", () => {
+  it("should remove the observer item from the observer items", () => {
+    const callbackId = "1";
+    const mockDiv = document.createElement("div");
+
+    ObserverJS.observe(mockDotNetRef, callbackId, mockDiv);
+    ObserverJS.remove(callbackId);
+
+    const items = ObserverJS.getObserverItems();
+
+    expect(disconnect).toHaveBeenCalledTimes(1);
+    expect(items.size).toBe(0);
+  });
+
+  it("should throw an error if the observer item does not exist", () => {
+    const callbackId = "1";
+
+    expect(() => {
+      ObserverJS.remove(callbackId);
+    }).toThrowError();
+  });
 });
 
 describe("when an element is intersecting", () => {
+  it("should return a list of entries to the observer instance dotnet reference", () => {
+    const callbackId = "1";
+    const mockDiv = document.createElement("div");
 
-    it("should return a list of entries to the relevant observer instance", () => {
-        const observerId = "1";
-        const mockDiv = getMockElement("div");
-        
-        ObserverJS.observe(mockDotNetRef, observerId, mockDiv, {});        
+    ObserverJS.observe(mockDotNetRef, callbackId, mockDiv);
 
-        if (onEntryChangeCallback != null) {
-            onEntryChangeCallback([
-                getObserverEntry({ target: mockDiv })
-            ]);
-        }
-        
-        const [[arg1, arg2, arg3]] = mockDotNetRef.invokeMethodAsync.mock.calls;
+    const entry = getObserverEntry({ target: mockDiv });
 
-        expect(arg1).toBe("OnCallback");
-        expect(arg2).toBe(observerId);
-    });
+    onEntryChangeCallback!([entry]);
 
-    it("should not return a list of entries if there are no observer instances", () => {
-        const observerId = "1";
-        const mockDiv = getMockElement("div");
+    const [[arg1, arg2, [passedEntry]]] =
+      mockDotNetRef.invokeMethodAsync.mock.calls;
 
-        ObserverJS.observe(mockDotNetRef, observerId, mockDiv, {});
-        ObserverJS.disconnect(observerId);
+    expect(arg1).toBe("OnCallback");
+    expect(arg2).toBe(callbackId);
+  });
 
-        if (onEntryChangeCallback != null) {
-            onEntryChangeCallback([
-                getObserverEntry({ target: mockDiv })
-            ]);
-        }
+  it("should not return a list of entries if the observer item does not exist", () => {
+    const callbackId = "1";
+    const mockDiv = document.createElement("div");
 
-        expect(mockDotNetRef.invokeMethodAsync).toHaveBeenCalledTimes(0);
-    });
+    ObserverJS.observe(mockDotNetRef, callbackId, mockDiv);
+    ObserverJS.remove(callbackId);
 
+    onEntryChangeCallback!([getObserverEntry()]);
+
+    expect(mockDotNetRef.invokeMethodAsync).toHaveBeenCalledTimes(0);
+  });
 });

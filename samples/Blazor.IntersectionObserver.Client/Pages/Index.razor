@@ -15,9 +15,11 @@
 </div>
 
 <div class="window">
-    <IntersectionObserve Options="@ObserverOptions" Class="box" Style="@BoxStyle" OnChange="@OnIntersectingChanged">
-        <div class="vertical">
-            Welcome to <strong>The Box!</strong>
+    <IntersectionObserve Options="@ObserverOptions" OnChange="@OnIntersectingChanged">
+        <div class="box" style="@BoxStyle" @ref="context.Ref.Current">
+            <div class="vertical">
+                Welcome to <strong>The Box!</strong>
+            </div>
         </div>
     </IntersectionObserve>
 </div>

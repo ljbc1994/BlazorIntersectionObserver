@@ -1,5 +1,6 @@
 using Blazor.IntersectionObserver.API;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +8,11 @@ using System.Threading.Tasks;
 
 namespace Blazor.IntersectionObserver.Components
 {
-    public class IntersectionObserveBase : ComponentBase, IAsyncDisposable
+    public class IntersectionObserve : ComponentBase, IAsyncDisposable
     {
         [Inject] private IIntersectionObserverService ObserverService { get; set; }
 
-        [Parameter] public string Class { get; set; }
-
-        [Parameter] public string Style { get; set; }
-
-        [Parameter] public RenderFragment<IntersectionObserverEntry> ChildContent { get; set; }
+        [Parameter] public RenderFragment<IntersectionObserverContext> ChildContent { get; set; }
 
         [Parameter] public bool IsIntersecting { get; set; }
 
@@ -23,13 +20,13 @@ namespace Blazor.IntersectionObserver.Components
 
         [Parameter] public EventCallback<IntersectionObserverEntry> OnChange { get; set; }
 
+        [Parameter] public EventCallback OnDisposed { get; set; }
+
         [Parameter] public IntersectionObserverOptions Options { get; set; }
 
         [Parameter] public bool Once { get; set; }
 
-        public ElementReference Element { get; set; }
-
-        public IntersectionObserverEntry Entry { get; set; }
+        public IntersectionObserverContext IntersectionObserverContext { get; set; } = new IntersectionObserverContext();
 
         private IntersectionObserver Observer { get; set; }
 
@@ -43,7 +40,12 @@ namespace Blazor.IntersectionObserver.Components
 
         private async Task InitialiseObserver()
         {
-            this.Observer = await this.ObserverService.Observe(this.Element, this.OnIntersectUpdate, this.Options);
+            if (this.IntersectionObserverContext?.Ref?.Current == null)
+            {
+                throw new Exception("You need to provide the element to observe, for example: @ref=\"Context.Ref.Current\"");
+            }
+
+            this.Observer = await this.ObserverService.Observe(this.IntersectionObserverContext.Ref.Current, this.OnIntersectUpdate, this.Options);
         }
 
         private async void OnIntersectUpdate(IList<IntersectionObserverEntry> entries)
@@ -55,22 +57,30 @@ namespace Blazor.IntersectionObserver.Components
             await this.IsIntersectingChanged.InvokeAsync(entry.IsIntersecting);
             await this.OnChange.InvokeAsync(entry);
 
-            this.Entry = entry;
+            this.IntersectionObserverContext.Entry = entry;
             this.StateHasChanged();
 
             if (this.Once && entry.IsIntersecting)
             {
-                await this.Observer.Disconnect();
+                await this.Observer.Dispose();
                 this.Observer = null;
             }
         }
 
         public async ValueTask DisposeAsync()
         {
-            if (this.Observer != null)
-            {
-                await this.Observer.Disconnect();
-            }
+            var observer = this.Observer;
+
+            if (observer == null) return;
+
+            this.Observer = null;
+            await observer.Dispose();
+            await this.OnDisposed.InvokeAsync();
+        }
+
+        protected override void BuildRenderTree(RenderTreeBuilder builder)
+        {
+            this.ChildContent(this.IntersectionObserverContext)(builder);
         }
     }
 }

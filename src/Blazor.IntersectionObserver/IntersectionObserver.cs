@@ -33,7 +33,12 @@ namespace Blazor.IntersectionObserver
         /// <summary>
         /// On disconnecting the observer, trigger the action
         /// </summary>
-        private event Func<string, ValueTask> OnDisconnect;
+        private event Func<string, ValueTask<bool>> OnDisconnect;
+
+        /// <summary>
+        /// On disconnecting the observer, trigger the action
+        /// </summary>
+        private event Func<string, ValueTask> OnRemove;
 
         /// <summary>
         /// Initialise the intersection observer with the
@@ -48,7 +53,8 @@ namespace Blazor.IntersectionObserver
             Action<IList<IntersectionObserverEntry>> onIntersectUpdate,
             Func<string, ElementReference, ValueTask> onObserve,
             Func<string, ElementReference, ValueTask> onUnobserve,
-            Func<string, ValueTask> onDisconnect
+            Func<string, ValueTask<bool>> onDisconnect,
+            Func<string, ValueTask> onRemove
         )
         {
             this.Id = id;
@@ -56,6 +62,7 @@ namespace Blazor.IntersectionObserver
             OnObserve = onObserve;
             OnUnobserve = onUnobserve;
             OnDisconnect = onDisconnect;
+            OnRemove = onRemove;
         }
 
         /// <summary>
@@ -98,6 +105,15 @@ namespace Blazor.IntersectionObserver
         public async ValueTask Disconnect()
         {
             await (OnDisconnect.Invoke(this.Id));
+        }
+
+        /// <summary>
+        /// Signal that the observer should be
+        /// disposed.
+        /// </summary>
+        public async ValueTask Dispose()
+        {
+            await OnRemove.Invoke(this.Id);
         }
     }
 }

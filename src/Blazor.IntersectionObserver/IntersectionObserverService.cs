@@ -3,6 +3,7 @@ using Blazor.IntersectionObserver.Configuration;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,6 +11,8 @@ namespace Blazor.IntersectionObserver
 {
     public class IntersectionObserverService: IIntersectionObserverService, IAsyncDisposable
     {
+        private readonly string scriptPath = "/_content/BlazorIntersectionObserver/blazor-intersection-observer.min.js";
+
         private readonly Task<IJSObjectReference> moduleTask;
 
         private DotNetObjectReference<IntersectionObserverService> objectRef;
@@ -17,12 +20,11 @@ namespace Blazor.IntersectionObserver
         /// <summary>
         /// Contains a reference of observer instances and their ids.
         /// </summary>
-        private readonly IDictionary<string, IntersectionObserver> observers = new Dictionary<string, IntersectionObserver>();
-
+        private readonly ConcurrentDictionary<string, IntersectionObserver> observers = new ConcurrentDictionary<string, IntersectionObserver>();
 
         public IntersectionObserverService(IJSRuntime jsRuntime)
         {
-            this.moduleTask = jsRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/BlazorIntersectionObserver/blazor-intersection-observer.js").AsTask();
+            this.moduleTask = jsRuntime.InvokeAsync<IJSObjectReference>("import", this.scriptPath).AsTask();
             this.objectRef = DotNetObjectReference.Create(this);
         }
 
@@ -79,7 +81,12 @@ namespace Blazor.IntersectionObserver
         [JSInvokable(nameof(OnCallback))]
         public void OnCallback(string id, IList<IntersectionObserverEntry> entries)
         {
-            this.observers[id]?.OnIntersect(entries);
+            this.EnsureObserverExists(id);
+
+            if (this.observers.TryGetValue(id, out var observer))
+            {
+                observer.OnIntersect(entries);
+            }
         }
 
         /// <summary>
@@ -90,11 +97,21 @@ namespace Blazor.IntersectionObserver
         /// <returns>The observer instance</returns>
         private IntersectionObserver CreateObserver(string observerId, Action<IList<IntersectionObserverEntry>> onIntersectUpdate)
         {
-            var observer = new IntersectionObserver(observerId, onIntersectUpdate, this.ObserveElement, this.Unobserve, this.Disconnect);
+            var observer = new IntersectionObserver(
+                observerId,
+                onIntersectUpdate,
+                this.ObserveElement,
+                this.Unobserve,
+                this.Disconnect,
+                this.RemoveObserver
+            );
 
-            this.observers.Add(observerId, observer);
+            if (this.observers.TryAdd(observerId, observer))
+            {
+                return observer;
+            }
 
-            return observer;
+            throw new Exception($"Failed to create observer for key: {observerId}");
         }
 
         /// <summary>
@@ -121,27 +138,41 @@ namespace Blazor.IntersectionObserver
         {
             var module = await this.moduleTask;
 
-            var unobserved = await module.InvokeAsync<bool>(Constants.UNOBSERVE, id, element);
-
-            if (unobserved)
-            {
-                this.observers.Remove(id);
-            }
+            await module.InvokeAsync<bool>(Constants.UNOBSERVE, id, element);
         }
 
         /// <summary>
         /// Disconnect the observer instance
         /// </summary>
         /// <param name="id">The observer instance id</param>
-        private async ValueTask Disconnect(string id)
+        private async ValueTask<bool> Disconnect(string id)
         {
             var module = await this.moduleTask;
 
-            var disconnected = await module.InvokeAsync<bool>(Constants.DISCONNECT, id);
+            return await module.InvokeAsync<bool>(Constants.DISCONNECT, id);
+        }
 
-            if (disconnected)
+        /// <summary>
+        /// Disconnect the observer instance
+        /// </summary>
+        /// <param name="id">The observer instance id</param>
+        private async ValueTask RemoveObserver(string id)
+        {
+            var module = await this.moduleTask;
+
+            var disposed = await module.InvokeAsync<bool>(Constants.REMOVE, id);
+
+            if (disposed)
             {
-                this.observers.Remove(id);
+                this.observers.TryRemove(id, out _);
+            }
+        }
+
+        private void EnsureObserverExists(string id)
+        {
+            if (!this.observers.ContainsKey(id))
+            {
+                throw new Exception($"There is no observer for key: {id}");
             }
         }
 
@@ -149,9 +180,7 @@ namespace Blazor.IntersectionObserver
         {
             this.objectRef?.Dispose();
 
-            var module = await this.moduleTask;
-
-            await module.DisposeAsync();
+            await Task.CompletedTask;
         }
     }
 }

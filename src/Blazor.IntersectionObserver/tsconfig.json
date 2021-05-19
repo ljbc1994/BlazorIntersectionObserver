@@ -4,12 +4,14 @@
     "noEmitOnError": true,
     "removeComments": true,
     "sourceMap": true,
-    "target": "esnext",
+    "target": "ES2019",
     "module": "esnext",
-    "lib": [ "es2016", "dom" ],
+    "lib": [ "ES2019", "dom" ],
     "strict": true,
     "alwaysStrict": true,
-    "preserveConstEnums": true
+    "preserveConstEnums": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
   },
   "exclude": [
     "node_modules"

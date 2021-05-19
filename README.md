@@ -60,8 +60,8 @@ object which contains the observer entry! Easy!
 @using Blazor.IntersectionObserver
 
 <IntersectionObserve>
-    <div>
-        Hey... look I'm @(context != null && context.IsIntersecting ? "in view": "out of view")
+    <div @ref="context.Ref.Current">
+        Hey... I'm @(context.IsIntersecting ? "in view": "out of view")
     </div>
 </IntersectionObserve>
 ```
@@ -179,6 +179,37 @@ To disconnect the observer, call `Disconnect` on the `IntersectionObserver` inst
 observer.Disconnect();
 ```
 
+This will remove all the observed elements from the observer, i.e.
+
+```razor
+@using Blazor.IntersectionObserver
+@implements IAsyncDisposable
+@inject IIntersectionObserverService ObserverService
+
+<div @ref="ImageRef"></div>
+
+@functions {
+    private IntersectionObserver Observer;
+    @* Code... *@
+
+    public async ValueTask DisconnectAll()
+    {
+        if (this.Observer != null)
+        {
+            await this.Observer.Disconnect();
+        }
+    }
+}
+
+```
+
+#### `Dispose`
+To remove the observer, call `Dispose` on the `IntersectionObserver` instance.
+
+```cs
+observer.Dispose();
+```
+
 This is a useful method to clean up observers when components are disposed of, i.e.
 
 ```razor
@@ -186,7 +217,7 @@ This is a useful method to clean up observers when components are disposed of, i
 @implements IAsyncDisposable
 @inject IIntersectionObserverService ObserverService
 
-<div @ref="NicolasCageRef"></div>
+<div @ref="ImageRef"></div>
 
 @functions {
     private IntersectionObserver Observer;
@@ -196,7 +227,7 @@ This is a useful method to clean up observers when components are disposed of, i
     {
         if (this.Observer != null)
         {
-            await this.Observer.Disconnect();
+            await this.Observer.Dispose();
         }
     }
 }
@@ -209,12 +240,14 @@ This is a useful method to clean up observers when components are disposed of, i
 
 Rather than directly interfacing with the service, you can use this convenience component for quick and easy observing. You can access the observer entry through the implicit `@context`!
 
+You need to make sure to provide the reference of the element you want to observe, this is done by passing the element reference to the context reference.
+
 ```razor
 @* Injecting service... *@
 
 <IntersectionObserve>
-    <div>
-        Hey... look I'm @(context != null && context.IsIntersecting ? "intersecting!": "not intersecting!")
+    <div @ref="context.Ref.Current">
+        Hey... look I'm @(context.IsIntersecting ? "intersecting!": "not intersecting!")
     </div>
 </IntersectionObserve>
 
@@ -227,13 +260,18 @@ Rather than directly interfacing with the service, you can use this convenience 
 - `IsIntersecting` (`bool`) - Whether the element is intersecting - used for two-way binding.
 - `Options` (`IntersectionObserverOptions`) - The options for the observer.
 - `Once` (`bool`) - Only observe once for an intersection, then the instance disposes of itself.
-- `Style` (`string`) - The style for the element.
-- `Class` (`string`) - The class for the element.
 
 #### Context 
-The context is the `IntersectionObserverEntry` object, with the following signature:
+The context is the `IntersectionObserverContext` object, with the following signature:
 
 ```cs
+public class IntersectionObserverContext 
+{
+    public IntersectionObserverEntry Entry { get; set; }
+    public ForwardReference Ref { get; set; } = new ForwardReference();
+    public bool IsIntersecting => this.Entry?.IsIntersecting ?? false;
+}
+
 public class IntersectionObserverEntry
 {
     public bool IsIntersecting { get; set; }
@@ -249,9 +287,6 @@ public class IntersectionObserverEntry
     public double Time { get; set; }
 }
 ```
-
-## Implementation Detail
-To avoid creating an unnecessary number of observers for every element being observed, if a `Blazor Observer` shares exactly the same options as another, they will both use the same `IntersectionObserver` instance in JS. As each `Blazor Observer` has a unique id and callback, the elements that are being observed will still be passed to their respective `Blazor Observer`.
 
 ## Feature Requests
 There's so much that `IntersectionObserver` can do, so if you have any requests or you want better documentation and examples, feel free to make a pull request or create an issue!

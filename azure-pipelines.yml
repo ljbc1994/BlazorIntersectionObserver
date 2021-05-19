@@ -8,6 +8,10 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  variables:
+  Major: '2'
+  Minor: '0'
+  Patch: '0'
 
 steps:
   - task: UseDotNet@2
@@ -53,8 +57,8 @@ steps:
       packagesToPack: 'src/Blazor.IntersectionObserver/*.csproj'
       configuration: '$(buildConfiguration)'
       versioningScheme: byPrereleaseNumber
-      majorVersion: '0'
-      minorVersion: '1'
-      patchVersion: '0'
+      majorVersion: '$(Major)'
+      minorVersion: '$(Minor)'
+      patchVersion: '$(Patch)'
 
 

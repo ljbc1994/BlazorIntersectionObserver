@@ -19,11 +19,13 @@
         <div class="card-columns">
             @foreach (var image in Images)
             {
-                <div class="card">
-                    <IntersectionObserve Class="image-container" Once=@true>
-                        @{var isIntersecting = (context != null && context.IsIntersecting);}
-                        <div class="image-loader @(isIntersecting ? "image-loader--hide" : "image-loader--show")">Loading...</div>
-                        <img class="image @(isIntersecting ? "image--show" : "image--hide")" src="@(isIntersecting ? image: "")" />
+                <div class="card" @key="image">
+                    <IntersectionObserve Once=@true>
+                        <div class="image-container" @ref="context.Ref.Current">
+                            @{var isIntersecting = context.IsIntersecting;}
+                            <div class="image-loader @(isIntersecting ? "image-loader--hide" : "image-loader--show")">Loading...</div>
+                            <img class="image @(isIntersecting ? "image--show" : "image--hide")" src="@(isIntersecting ? image: "")" />
+                        </div>
                     </IntersectionObserve>
                     <div class="card-body">
                         <h5 class="card-title">Card title</h5>
@@ -47,7 +49,7 @@
         {
             var height = RandomNumber(250, 650);
             var width = RandomNumber(250, 650);
-            return $"https://www.placehold.it/{width}x{height}";
+            return $"https://picsum.photos/{width}/{height}?id={x}";
         })
         .ToList();
 }
