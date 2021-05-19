@@ -121,7 +121,6 @@ export function observe(
   node: Element,
   options?: globalThis.IntersectionObserverInit
 ): string {
-  console.log({ dotnetRef, callbackId, node })
   createObserverItem(dotnetRef, callbackId, options);
   return observeElement(callbackId, node);
 }
