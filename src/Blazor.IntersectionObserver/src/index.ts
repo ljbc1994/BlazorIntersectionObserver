@@ -50,7 +50,7 @@ function getObserverElementId() {
  * @param {DotNetObjectRef} dotnetRef - The current dotnet blazor reference
  * @param {string} callbackId - The callback id for the blazor observer service
  * @param {globalThis.IntersectionObserverInit} options - The intersection options
- * @returns {IntersectionObserverItem} - The resize observer item
+ * @returns {IntersectionObserverItem} - The intersection observer item
  */
 function createObserverItem(
   dotnetRef: DotNetObjectRef,
@@ -97,7 +97,7 @@ export function observeElement(callbackId: string, element: Element): string {
  * @param {IDotNetObjectRef} dotnetRef - The dotnet interop reference
  * @param {string} callbackId - The callback id for the blazor observer service
  * @param {globalThis.IntersectionObserverInit} options - The intersection observer options
- * @returns {ResizeObserverItem} - The observer item
+ * @returns {IntersectionObserverItem} - The observer item
  */
 export function create(
   dotnetRef: DotNetObjectRef,
@@ -141,7 +141,7 @@ export function unobserve(callbackId: string, element: Element): string {
   const unobserveElementId = item.elements.find((record) => record.element == element)?.elementId;
 
   if (unobserveElementId == null) {
-    console.warn(`BlazorResizeObserver: The record does not exist for observer: ${callbackId}`);
+    console.warn(`BlazorIntersectionObserver: The record does not exist for observer: ${callbackId}`);
   }
 
   item.observer.unobserve(element);
@@ -213,9 +213,9 @@ function toEntryObject(entry: IntersectionObserverEntry) {
 
 /**
  * Returns a function that will be triggered when an
- * element has an resize update.
+ * element has an intersection update.
  * @param {string} callbackId - The observer item id
- * @returns {OnIntersectionUpdateFn} - The function triggered by an resize update
+ * @returns {OnIntersectionUpdateFn} - The function triggered by an intersection update
  */
 function onEntryChange(callbackId: string): OnIntersectionUpdateFn {
   return (entries: readonly IntersectionObserverEntry[]) => {
