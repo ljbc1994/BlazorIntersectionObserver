@@ -1,21 +1,16 @@
-export interface IDotNetObjectRef {
+export interface DotNetObjectRef {
   invokeMethodAsync(methodName: string, ...args: any[]): Promise<any>;
 }
 
+export interface IntersectionObserverItemElement {
+  element: Element;
+  elementId: string;
+}
+
 export interface IntersectionObserverItem {
-  id: string;
-  instance: IntersectionObserverInstance;
-}
-
-export interface IntersectionObserverInstance {
-  dotnetRef: IDotNetObjectRef;
+  dotnetRef: DotNetObjectRef;
   observer: IntersectionObserver;
-  options: IntersectionObserverInit;
-  elements: Map<string, Set<Element>>;
-}
-
-export interface ElementInstance {
-  observers: IntersectionObserverInstance[];
+  elements: IntersectionObserverItemElement[];
 }
 
 export type OnIntersectionUpdateFn = (
@@ -26,13 +21,13 @@ export const OBSERVER_ID_PREFIX = "blazor_plugin_observer__";
 
 let OBSERVER_ID = 1;
 
-const observerItems = new Map<string, IntersectionObserverInstance>();
+const observerItems = new Map<string, IntersectionObserverItem>();
 
 /**
  * Reset the counter and the observer instances
  */
 export function reset() {
-  OBSERVER_ID = 1;
+  OBSERVER_ID = 0;
   observerItems.clear();
 }
 
@@ -46,232 +41,146 @@ export function getObserverItems() {
 /**
  * Generate a unique id for an observer item.
  **/
-function createObserverItemId() {
+function getObserverElementId() {
   return `${OBSERVER_ID_PREFIX}${OBSERVER_ID++}`;
 }
 
 /**
- * Check whether the two options are the same.
- * @param {IntersectionObserverInit} a - An observer's options to compare
- * @param {IntersectionObserverInit} b - An observer's options to compare
- * @returns {boolean} - Whether the two options are the same
- */
-function hasSameOptions(
-  a: IntersectionObserverInit,
-  b: IntersectionObserverInit
-): boolean {
-  return (
-    a.root === b.root &&
-    a.rootMargin === b.rootMargin &&
-    a.threshold === b.threshold
-  );
-}
-
-/**
- * If there's an existing observer item, retrieve it given the same options.
- * @param {IntersectionObserverInit} options - The observer options
- * @returns {IntersectionObserverItem | null} - The observer item or nothing
- */
-function getItemFromOptions(
-  options: IntersectionObserverInit
-): IntersectionObserverItem | null {
-  let itemFound: IntersectionObserverItem | null = null;
-
-  for (const [id, instance] of observerItems) {
-    if (hasSameOptions(options, instance.options)) {
-      itemFound = { id, instance };
-      break;
-    }
-  }
-
-  return itemFound;
-}
-
-/**
- * Add an element to the observer instance.
- * @param {IntersectionObserverInstance} instance - The observer instance
- * @param {Element} element - The element to add to the instance
- * @param {string} observerId - The observer id
- * @returns {IntersectionObserverInstance} - The observer instance
- */
-function observeInstanceElement(
-  instance: IntersectionObserverInstance,
-  observerId: string,
-  element: Element
-) {
-  const { elements, observer } = instance;
-  const observerElements = elements.get(observerId);
-
-  if (observerElements != null) {
-    observerElements.add(element);
-  } else {
-    elements.set(
-      observerId,
-      new Set<Element>([element])
-    );
-  }
-
-  observer.observe(element);
-  return instance;
-}
-
-/**
- * Create or use an existing intersection observer item.
+ * Create a new intersection observer item.
  * @param {DotNetObjectRef} dotnetRef - The current dotnet blazor reference
- * @param {IntersectionObserverEntryInit} options - The observer options
- * @returns {IntersectionObserverItem} - The intersection observer item
+ * @param {string} callbackId - The callback id for the blazor observer service
+ * @param {globalThis.IntersectionObserverInit} options - The intersection options
+ * @returns {IntersectionObserverItem} - The resize observer item
  */
-function getObserverItem(
-  dotnetRef: IDotNetObjectRef,
-  options: IntersectionObserverInit
+function createObserverItem(
+  dotnetRef: DotNetObjectRef,
+  callbackId: string,
+  options?: globalThis.IntersectionObserverInit
 ): IntersectionObserverItem {
-  if (options == null) {
-    options = {};
+  const onEntry = onEntryChange(callbackId);
+
+  const observer = new IntersectionObserver(onEntry, options);
+
+  observerItems.set(callbackId, { dotnetRef, observer, elements: [] });
+
+  return observerItems.get(callbackId)!;
+}
+
+/**
+ * Observe an element for the observer item
+ * @param {string} callbackId - The callback id for the blazor observer service
+ * @param {Element} element - The element to observe
+ * @returns {string} - The observer element id
+ */
+export function observeElement(callbackId: string, element: Element): string {
+  const item = observerItems.get(callbackId);
+
+  if (item == null) {
+    throw new Error(`Failed to observe element for key: ${callbackId} as the observer does not exist`);
   }
 
-  const observerItem = getItemFromOptions(options);
-
-  if (observerItem == null) {
-    const id = createObserverItemId();
-    const observer = new IntersectionObserver(onEntryChange(id), options);
-    const elements = new Map<string, Set<Element>>();
-
-    observerItems.set(id, { dotnetRef, options, observer, elements });
-
-    return {
-      id,
-      instance: observerItems.get(id) as IntersectionObserverInstance,
-    };
+  if (item.elements.some(record => record.element == element)) {
+    console.warn(`BlazorIntersectionObserver: The element is already being observed by observer for key ${callbackId}`);
+    return "";
   }
 
-  return observerItem;
+  const elementId = getObserverElementId();
+
+  item.observer.observe(element);
+  item.elements.push({ elementId, element });
+
+  return elementId;
 }
 
 /**
  * Create a intersection observer.
  * @param {IDotNetObjectRef} dotnetRef - The dotnet interop reference
- * @param {string} id - The instance id of the "observer"
- * @param {IntersectionObserverInit} options - The intersection obsever options
- * @returns {IntersectionObserverItem} - The observer item
+ * @param {string} callbackId - The callback id for the blazor observer service
+ * @param {globalThis.IntersectionObserverInit} options - The intersection observer options
+ * @returns {ResizeObserverItem} - The observer item
  */
 export function create(
-  dotnetRef: IDotNetObjectRef,
-  id: string,
-  options: IntersectionObserverInit
+  dotnetRef: DotNetObjectRef,
+  callbackId: string,
+  options?: globalThis.IntersectionObserverInit
 ) {
-  const item = getObserverItem(dotnetRef, options);
-  const { instance } = item;
-  instance.elements.set(id, new Set<Element>([]));
-  return item;
+  return createObserverItem(dotnetRef, callbackId, options);
 }
 
 /**
- * Observe the target node using a new or existing observer
- * @param {IDotNetObjectRef} dotnetRef - The dotnet interop reference
- * @param {string} id - The instance id of the "observer"
+ * Observe the target node using a new observer
+ * @param {DotNetObjectRef} dotnetRef - The dotnet interop reference
+ * @param {string} callbackId - The callback id for the blazor observer service
  * @param {Element} node - The node to observe
- * @param {IntersectionObserverInit} options - The intersection observer options
- * @returns {IntersectionObserverInstance} - The observer instance
+ * @param {globalThis.IntersectionObserverInit} options - The intersection observer options
+ * @returns {string} - The observer element id
  */
 export function observe(
-  dotnetRef: IDotNetObjectRef,
-  id: string,
+  dotnetRef: DotNetObjectRef,
+  callbackId: string,
   node: Element,
-  options: IntersectionObserverInit
-) {
-  const { instance } = getObserverItem(dotnetRef, options);
-  return observeInstanceElement(instance, id, node);
+  options?: globalThis.IntersectionObserverInit
+): string {
+  console.log({ dotnetRef, callbackId, node })
+  createObserverItem(dotnetRef, callbackId, options);
+  return observeElement(callbackId, node);
 }
 
 /**
- * Observe an element for the observer instance.
- * @param id - The observer id
- * @param element - The element to observe
- */
-export function observeElement(id: string, element: Element) {
-  const instances = observerItems.values();
-
-  for (const instance of instances) {
-    const elements = instance.elements.get(id);
-
-    if (elements != null && !elements.has(element)) {
-      instance.observer.observe(element);
-      elements.add(element);
-      break;
-    }
-  }
-}
-
-/**
- * If there are no elements in the observer
- * instance, disconnect the observer and remove
- * it from the observer instances.
- * @param {string} itemId - The observer item id
- * @param {IntersectionObserverInstance} instance - The instance to remove
- * @returns {boolean} - Whether the instance has been removed
- */
-function cleanupObserver(
-  itemId: string,
-  instance: IntersectionObserverInstance
-) {
-  let instanceRemoved = false;
-
-  if (instance.elements.size === 0) {
-    instance.observer.disconnect();
-    observerItems.delete(itemId);
-    instanceRemoved = true;
-  }
-
-  return instanceRemoved;
-}
-
-
-/**
- * Remove the element from the observer instance and
- * unobserve the element.
- * @param {string} id - The observer id
- * @param {Element} element - The node to unobserve
+ * Unobserve the element for the observer item.
+ * @param {string} id - The observer item id
+ * @param {Element} element - The element to unobserve
  * @returns {boolean} - Whether the element has been unobserved
  */
-export function unobserve(id: string, element: Element) {
-  const instances = observerItems.values();
-  let removed = false;
+export function unobserve(callbackId: string, element: Element): string {
+  const item = observerItems.get(callbackId);
 
-  for (const instance of instances) {
-    const elements = instance.elements.get(id);
-
-    if (elements != null && elements.has(element)) {
-      instance.observer.unobserve(element);
-      elements.delete(element);
-      removed = true;
-      break;
-    }
+  if (item == null) {
+    throw new Error(`Failed to unobserve element for key: ${callbackId} as the observer does not exist`);
   }
 
-  return removed;
+  const unobserveElementId = item.elements.find((record) => record.element == element)?.elementId;
+
+  if (unobserveElementId == null) {
+    console.warn(`BlazorResizeObserver: The record does not exist for observer: ${callbackId}`);
+  }
+
+  item.observer.unobserve(element);
+  item.elements = item.elements.filter((record) => record.element != element);
+
+  return unobserveElementId!;
 }
 
 /**
- * Delete the elements from the observer instance
- * and trigger cleaning up the observers.
- * @param {string} id - The observer instance id
+ * Disconnect the observered elements from the observer item.
+ * @param {string} callbackId - The observer item id
  * @returns {boolean} - Whether the elements have
- * been removed from the observer instance
+ * been removed from the observer item
  */
-export function disconnect(id: string) {
-  const observers = observerItems.entries();
-  let disconnected = false;
+export function disconnect(callbackId: string): boolean {
+  const item = observerItems.get(callbackId);
 
-  for (const [instanceId, instance] of observers) {
-    if (instance.elements.get(id)) {
-      instance.elements.delete(id);
-      cleanupObserver(instanceId, instance);
-      disconnected = true;
-      break;
-    }
+  if (item == null) {
+    throw new Error(`Failed to disconnect for key: ${callbackId} as the observer does not exist`);
   }
 
-  return disconnected;
+  item.observer.disconnect();
+  item.elements = [];
+
+  return true;
+}
+
+/**
+ * Remove the observer item.
+ * @param {string} callbackId - The observer item id
+ * @returns {boolean} - Whether the observer item has been
+ * removed.
+ */
+export function remove(callbackId: string): boolean {
+  if (disconnect(callbackId)) {
+    return observerItems.delete(callbackId);
+  }
+  return false;
 }
 
 /**
@@ -305,36 +214,28 @@ function toEntryObject(entry: IntersectionObserverEntry) {
 
 /**
  * Returns a function that will be triggered when an
- * element has an intersection update.
- * @param {string} observerInstanceId - The instance id
- * @returns {OnIntersectionUpdateFn} - The function triggered by an intersection update
+ * element has an resize update.
+ * @param {string} callbackId - The observer item id
+ * @returns {OnIntersectionUpdateFn} - The function triggered by an resize update
  */
-function onEntryChange(observerInstanceId: string): OnIntersectionUpdateFn {
-  return (entries: IntersectionObserverEntry[]) => {
-    if (!observerItems.has(observerInstanceId)) {
+function onEntryChange(callbackId: string): OnIntersectionUpdateFn {
+  return (entries: readonly IntersectionObserverEntry[]) => {
+
+    if (!observerItems.has(callbackId)) {
       return;
     }
 
-    const { dotnetRef, elements } = observerItems.get(
-      observerInstanceId
-    ) as IntersectionObserverInstance;
+    const { dotnetRef } = observerItems.get(callbackId)!;
 
-    const observerEntries = entries.reduce((batched, entry) => {
-      for (const [id, item] of elements) {
-        if (item.has(entry.target)) {
-          batched[id] = (batched[id] || []).concat(entry);
-        }
-      }
-      return batched;
-    }, {});
-
-    Object.keys(observerEntries).forEach((observerId) => {
-      const batch = observerEntries[observerId] as IntersectionObserverEntry[];
-      dotnetRef.invokeMethodAsync(
-        "OnCallback",
-        observerId,
-        batch.map(toEntryObject)
-      );
+    const mapped = entries.map((entry) => {
+      const mappedEntry = toEntryObject(entry);
+      return mappedEntry;
     });
+
+    dotnetRef.invokeMethodAsync(
+      "OnCallback",
+      callbackId,
+      mapped
+    );
   };
 }
