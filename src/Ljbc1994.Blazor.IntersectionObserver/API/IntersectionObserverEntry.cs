@@ -1,4 +1,4 @@
-namespace Blazor.IntersectionObserver.API
+namespace Ljbc1994.Blazor.IntersectionObserver.API
 {
     public class IntersectionObserverEntry
     {

@@ -7,11 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{06DF5E56-1E2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{5D04FCF1-FEF2-4F22-BF8A-5ACD34C364D7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.IntersectionObserver", "src\Blazor.IntersectionObserver\Blazor.IntersectionObserver.csproj", "{08BF0C04-9C65-4477-836A-B4DFF36D2C28}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.IntersectionObserver.Client", "samples\Blazor.IntersectionObserver.Client\Blazor.IntersectionObserver.Client.csproj", "{F3CCFB30-6C8F-40A8-BF19-1E19A17DBF80}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.IntersectionObserver.Server", "samples\Blazor.IntersectionObserver.Server\Blazor.IntersectionObserver.Server.csproj", "{8F503EA1-622E-48C0-8BA4-51AE7D413697}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ljbc1994.Blazor.IntersectionObserver", "src\Ljbc1994.Blazor.IntersectionObserver\Ljbc1994.Blazor.IntersectionObserver.csproj", "{5EAE5F4C-24EF-45A4-B4BE-D5C24D5772ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{08BF0C04-9C65-4477-836A-B4DFF36D2C28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{08BF0C04-9C65-4477-836A-B4DFF36D2C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{08BF0C04-9C65-4477-836A-B4DFF36D2C28}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{08BF0C04-9C65-4477-836A-B4DFF36D2C28}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3CCFB30-6C8F-40A8-BF19-1E19A17DBF80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3CCFB30-6C8F-40A8-BF19-1E19A17DBF80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3CCFB30-6C8F-40A8-BF19-1E19A17DBF80}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -31,16 +27,20 @@ Global
 		{8F503EA1-622E-48C0-8BA4-51AE7D413697}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F503EA1-622E-48C0-8BA4-51AE7D413697}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F503EA1-622E-48C0-8BA4-51AE7D413697}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EAE5F4C-24EF-45A4-B4BE-D5C24D5772ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EAE5F4C-24EF-45A4-B4BE-D5C24D5772ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EAE5F4C-24EF-45A4-B4BE-D5C24D5772ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EAE5F4C-24EF-45A4-B4BE-D5C24D5772ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{08BF0C04-9C65-4477-836A-B4DFF36D2C28} = {06DF5E56-1E2C-4435-854E-0155228D42E6}
 		{F3CCFB30-6C8F-40A8-BF19-1E19A17DBF80} = {5D04FCF1-FEF2-4F22-BF8A-5ACD34C364D7}
 		{8F503EA1-622E-48C0-8BA4-51AE7D413697} = {5D04FCF1-FEF2-4F22-BF8A-5ACD34C364D7}
+		{5EAE5F4C-24EF-45A4-B4BE-D5C24D5772ED} = {06DF5E56-1E2C-4435-854E-0155228D42E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {2A1E800E-0698-42F3-8B5D-2788225893E5}
+		SolutionGuid = {2A1E800E-0698-42F3-8B5D-2788225893E5} 
 	EndGlobalSection
 EndGlobal

@@ -57,7 +57,7 @@ object which contains the observer entry! Easy!
 #### Component setup
 
 ```razor
-@using Blazor.IntersectionObserver
+@using Ljbc1994.Blazor.IntersectionObserver
 
 <IntersectionObserve>
     <div @ref="context.Ref.Current">
@@ -73,7 +73,7 @@ object which contains the observer entry! Easy!
 To directly use the service, you just need to inject it and observe the element(s).
 
 ```razor
-@using Blazor.IntersectionObserver
+@using Ljbc1994.Blazor.IntersectionObserver
 @inject IIntersectionObserverService ObserverService
 
 <img @ref="ImageElement" src="@(IsIntersecting ? "https://www.placecage.com/g/500/500" : "")"/>
@@ -182,7 +182,7 @@ observer.Disconnect();
 This will remove all the observed elements from the observer, i.e.
 
 ```razor
-@using Blazor.IntersectionObserver
+@using Ljbc1994.Blazor.IntersectionObserver
 @implements IAsyncDisposable
 @inject IIntersectionObserverService ObserverService
 
@@ -213,7 +213,7 @@ observer.Dispose();
 This is a useful method to clean up observers when components are disposed of, i.e.
 
 ```razor
-@using Blazor.IntersectionObserver
+@using Ljbc1994.Blazor.IntersectionObserver
 @implements IAsyncDisposable
 @inject IIntersectionObserverService ObserverService
 

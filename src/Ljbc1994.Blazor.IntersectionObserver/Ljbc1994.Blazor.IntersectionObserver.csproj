@@ -16,9 +16,13 @@
     <Title>Blazor Intersection Observer</Title>
     <Description>Intersection Observer API for Blazor applications</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.0.3</Version>
+    <Version>3.0.0</Version>
     <Product>BlazorIntersectionObserver</Product>
     <PackageReleaseNotes>
+22/08/2021
+- *BREAKING CHANGE* Namespace has been changed to `Ljbc1994.Blazor.IntersectionObserver` to avoid
+namespace conflicts with Blazor libraries.
+
 19/05/2021
 - *BREAKING CHANGE* The IntersectionObserve component now requires a reference to the node it's observing.
 - The imported observer script is now minified.
@@ -35,6 +39,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
+    <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   
@@ -89,14 +94,11 @@
       <PackagePath></PackagePath>
     </None>
     <None Include="package-lock.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Include="package.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Include="Properties\launchSettings.json" />
     <None Include="tsconfig.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>
