@@ -38,4 +38,6 @@ jobs:
           include-prerelease: true
       
       - name: Dotnet build
-        run: dotnet build **/*.csproj --configuration Release
+        run: |
+            dotnet build **/*.csproj --configuration Release
+        working-directory: src/Ljbc1994.Blazor.IntersectionObserver
