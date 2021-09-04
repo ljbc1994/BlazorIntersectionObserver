@@ -38,6 +38,7 @@ jobs:
           include-prerelease: true
       
       - name: Dotnet build
-        run: |
-            dotnet build **/*.csproj --configuration Release
-        working-directory: src/Ljbc1994.Blazor.IntersectionObserver
+        run: dotnet build **/*.csproj --configuration Release
+
+      - name: Dotnet pack
+        run: dotnet pack src/Ljbc1994.Blazor.IntersectionObserver/*.csproj --configuration Release --verbosity Detailed

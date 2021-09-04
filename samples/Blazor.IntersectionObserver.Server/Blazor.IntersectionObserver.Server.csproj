@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Blazor.IntersectionObserver\Ljbc1994.Blazor.IntersectionObserver.csproj">
+    <ProjectReference Include="..\..\src\Ljbc1994.Blazor.IntersectionObserver\Ljbc1994.Blazor.IntersectionObserver.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
