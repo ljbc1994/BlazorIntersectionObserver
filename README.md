@@ -25,6 +25,8 @@ Now you'll need to add the service to the service configuration.
 #### WebAssembly (Program.cs)
 
 ```cs
+using Ljbc1994.Blazor.IntersectionObserver;
+
 public class Program
 {
     public static async Task Main(string[] args)
@@ -40,6 +42,8 @@ public class Program
 #### Server (Startup.cs)
 
 ```cs
+using Ljbc1994.Blazor.IntersectionObserver;
+
 public class Startup {
     public void ConfigureServices(IServiceCollection services)
     {
@@ -56,7 +60,7 @@ object which contains the observer entry! Easy!
 #### Component setup
 
 ```razor
-@using Ljbc1994.Blazor.IntersectionObserver
+@using Ljbc1994.Blazor.IntersectionObserver.Components
 
 <IntersectionObserve>
     <div @ref="context.Ref.Current">
