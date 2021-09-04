@@ -18,16 +18,17 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>3.0.0</Version>
     <Product>BlazorIntersectionObserver</Product>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>
-22/08/2021
+3.0.0
 - *BREAKING CHANGE* Namespace has been changed to `Ljbc1994.Blazor.IntersectionObserver` to avoid
 namespace conflicts with Blazor libraries.
 
-19/05/2021
+2.0.1
 - *BREAKING CHANGE* The IntersectionObserve component now requires a reference to the node it's observing.
 - The imported observer script is now minified.
 
-06/12/2020
+1.0.0
 - Updated project to use dotnet 5</PackageReleaseNotes>
     <PackageLicenseFile>LICENCE.txt</PackageLicenseFile>
     <Copyright>Copyright © 2021 - Louie Colgan</Copyright>
@@ -100,5 +101,6 @@ namespace conflicts with Blazor libraries.
     <None Include="Properties\launchSettings.json" />
     <None Include="tsconfig.json">
     </None>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>

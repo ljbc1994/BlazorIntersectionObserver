@@ -1,7 +1,7 @@
-name: build
+name: release
 
 on:
-    pull_request:
+    push:
         branches: [master]
         paths-ignore:
             - '**.md'
@@ -38,3 +38,10 @@ jobs:
 
       - name: Dotnet pack
         run: dotnet pack src/Ljbc1994.Blazor.IntersectionObserver/*.csproj --configuration Release --verbosity Detailed
+      
+      - name: Dotnet publish to nuget
+        run: dotnet nuget push src/Ljbc1994.Blazor.IntersectionObserver/bin/Release/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      
+      
