@@ -1,0 +1,40 @@
+name: build
+
+on:
+    pull_request:
+        branches: [master]
+        paths-ignore:
+            - '**.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Set Node.js
+        uses: actions/setup-node@v1
+        with:
+            node-version: 10.x
+
+      - name: Install npm dependencies
+        run: |
+            npm ci
+        working-directory: src/Ljbc1994.Blazor.IntersectionObserver
+
+      - name: Run tests
+        run: |
+            npm run test
+        working-directory: src/Ljbc1994.Blazor.IntersectionObserver
+
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+          include-prerelease: true
+      
+      - name: Dotnet build
+        run: dotnet build --configuration Release
+
+      - name: Dotnet pack
+        run: dotnet pack src/Ljbc1994.Blazor.IntersectionObserver/*.csproj --configuration Release --verbosity Detailed

@@ -1,6 +1,6 @@
-using Blazor.IntersectionObserver.API;
+using Ljbc1994.Blazor.IntersectionObserver.API;
 
-namespace Blazor.IntersectionObserver
+namespace Ljbc1994.Blazor.IntersectionObserver
 {
     public class IntersectionObserverContext
     {

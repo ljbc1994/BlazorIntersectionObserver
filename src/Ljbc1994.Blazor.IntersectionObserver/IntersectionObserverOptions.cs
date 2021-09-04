@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Collections.Generic;
 
-namespace Blazor.IntersectionObserver
+namespace Ljbc1994.Blazor.IntersectionObserver
 {
     public class IntersectionObserverOptions
     {

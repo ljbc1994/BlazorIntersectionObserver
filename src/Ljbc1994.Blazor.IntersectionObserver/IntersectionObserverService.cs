@@ -1,5 +1,5 @@
-using Blazor.IntersectionObserver.API;
-using Blazor.IntersectionObserver.Configuration;
+using Ljbc1994.Blazor.IntersectionObserver.API;
+using Ljbc1994.Blazor.IntersectionObserver.Configuration;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Blazor.IntersectionObserver
+namespace Ljbc1994.Blazor.IntersectionObserver
 {
     public class IntersectionObserverService: IIntersectionObserverService, IAsyncDisposable
     {

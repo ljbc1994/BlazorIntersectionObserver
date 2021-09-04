@@ -1,4 +1,4 @@
-namespace Blazor.IntersectionObserver.Configuration
+namespace Ljbc1994.Blazor.IntersectionObserver.Configuration
 {
     internal static class Constants
     {
