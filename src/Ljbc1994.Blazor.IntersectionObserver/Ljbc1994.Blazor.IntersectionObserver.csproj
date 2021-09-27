@@ -16,10 +16,14 @@
     <Title>Blazor Intersection Observer</Title>
     <Description>Intersection Observer API for Blazor applications</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.0.0</Version>
+    <Version>3.0.1</Version>
     <Product>BlazorIntersectionObserver</Product>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>
+3.0.1
+- Add helpful error messages if the consumer fails to provide an element to observe or does not provide
+any child content.
+
 3.0.0
 - *BREAKING CHANGE* Namespace has been changed to `Ljbc1994.Blazor.IntersectionObserver` to avoid
 namespace conflicts with Blazor libraries.

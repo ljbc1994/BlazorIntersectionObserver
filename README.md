@@ -291,6 +291,14 @@ public class IntersectionObserverEntry
 }
 ```
 
+## Additional Information
+
+### Upgrading to `2.0.1`+
+
+In versions prior to `2.0.1`, the `IntersectionObserve` component didn't require a reference to the node as it was wrapped in an element that was automatically observed. This was changed to ensure the consumer provides the reference to prevent any potential layout issues and make it explicit what element should be observed.
+
+Therefore, before `2.0.1`, if the consumer had an element with `display: none;` within the `IntersectionObserve` component, this would have worked. However, as we're now observing the element provided as opposed to a wrapped element, this will no longer work. To resolve this, you can wrap the observed element in a div and observe the container div instead of the observed element.
+
 ## Feature Requests
 There's so much that `IntersectionObserver` can do, so if you have any requests or you want better documentation and examples, feel free to make a pull request or create an issue!
 
