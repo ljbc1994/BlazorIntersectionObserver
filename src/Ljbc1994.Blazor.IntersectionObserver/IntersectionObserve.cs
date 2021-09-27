@@ -10,6 +10,8 @@ namespace Ljbc1994.Blazor.IntersectionObserver.Components
 {
     public class IntersectionObserve : ComponentBase, IAsyncDisposable
     {
+        private const string NO_ELEMENT_MESSAGE = "The element reference to observe is required, for example: @ref=\"Context.Ref.Current\" must be provided on the element";
+
         [Inject] private IIntersectionObserverService ObserverService { get; set; }
 
         [Parameter] public RenderFragment<IntersectionObserverContext> ChildContent { get; set; }
@@ -40,12 +42,14 @@ namespace Ljbc1994.Blazor.IntersectionObserver.Components
 
         private async Task InitialiseObserver()
         {
-            if (this.IntersectionObserverContext?.Ref?.Current == null)
+            var elementReference = this.IntersectionObserverContext?.Ref?.Current;
+
+            if (elementReference == null || Equals(elementReference, default(ElementReference)))
             {
-                throw new Exception("You need to provide the element to observe, for example: @ref=\"Context.Ref.Current\"");
+                throw new Exception(NO_ELEMENT_MESSAGE);
             }
 
-            this.Observer = await this.ObserverService.Observe(this.IntersectionObserverContext.Ref.Current, this.OnIntersectUpdate, this.Options);
+            this.Observer = await this.ObserverService.Observe(elementReference.Value, this.OnIntersectUpdate, this.Options);
         }
 
         private async void OnIntersectUpdate(IList<IntersectionObserverEntry> entries)
@@ -80,6 +84,10 @@ namespace Ljbc1994.Blazor.IntersectionObserver.Components
 
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
+            if (this.ChildContent == null)
+            {
+                throw new Exception($"No element found to observe. {NO_ELEMENT_MESSAGE}");
+            }
             this.ChildContent(this.IntersectionObserverContext)(builder);
         }
     }
