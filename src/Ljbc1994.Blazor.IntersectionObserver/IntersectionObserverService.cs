@@ -11,7 +11,7 @@ namespace Ljbc1994.Blazor.IntersectionObserver
 {
     public class IntersectionObserverService: IIntersectionObserverService, IAsyncDisposable
     {
-        private readonly string scriptPath = "/_content/BlazorIntersectionObserver/blazor-intersection-observer.min.js";
+        private readonly string scriptPath = "_content/BlazorIntersectionObserver/blazor-intersection-observer.min.js";
 
         private readonly Task<IJSObjectReference> moduleTask;
 
