@@ -22,9 +22,10 @@ namespace Ljbc1994.Blazor.IntersectionObserver
         /// </summary>
         private readonly ConcurrentDictionary<string, IntersectionObserver> observers = new ConcurrentDictionary<string, IntersectionObserver>();
 
-        public IntersectionObserverService(IJSRuntime jsRuntime)
+        public IntersectionObserverService(IJSRuntime jsRuntime, NavigationManager navManager)
         {
-            this.moduleTask = jsRuntime.InvokeAsync<IJSObjectReference>("import", this.scriptPath).AsTask();
+            var path = navManager.ToAbsoluteUri(this.scriptPath);
+            this.moduleTask = jsRuntime.InvokeAsync<IJSObjectReference>("import", path).AsTask();
             this.objectRef = DotNetObjectReference.Create(this);
         }
 
