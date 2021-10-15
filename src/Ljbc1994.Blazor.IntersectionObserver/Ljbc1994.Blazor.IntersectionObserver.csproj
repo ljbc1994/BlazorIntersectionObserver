@@ -16,10 +16,13 @@
     <Title>Blazor Intersection Observer</Title>
     <Description>Intersection Observer API for Blazor applications</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.0.1</Version>
+    <Version>3.1.0</Version>
     <Product>BlazorIntersectionObserver</Product>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>
+3.1.0
+- Use the navigation manager for importing intersection observer script
+
 3.0.1
 - Add helpful error messages if the consumer fails to provide an element to observe or does not provide
 any child content.
