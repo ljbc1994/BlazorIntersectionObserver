@@ -1,0 +1,99 @@
+@page "/"
+@using Ljbc1994.Blazor.IntersectionObserver
+@using Ljbc1994.Blazor.IntersectionObserver.API
+@using Ljbc1994.Blazor.IntersectionObserver.Components
+
+<div class="row">
+    <div class="col-sm-12">
+        <h1>
+            Mozilla Example Implementation
+        </h1>
+        <p class="lead">
+            This example matches the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API#A_simple_example">mozilla example</a>. This simple example causes a target element to change its color and transparency as it becomes more or less visible. Scroll down to see!
+        </p>
+    </div>
+</div>
+
+<div class="window">
+    <IntersectionObserve Options="@ObserverOptions" OnChange="@OnIntersectingChanged">
+        <div class="box" style="@BoxStyle" @ref="context.Ref.Current">
+            Welcome to <strong>The Box!</strong>
+        </div>
+    </IntersectionObserve>
+</div>
+
+@functions {
+    public static string IncreasingColor = "rgba(40, 40, 190, {0})";
+    public static string DecreasingColor = "rgba(190, 40, 40, {0})";
+
+    public static List<double> BuildThresholdList()
+    {
+        var numberOfSteps = 20;
+
+        var ratios = Enumerable
+            .Range(1, numberOfSteps)
+            .Select(x => (double)x / numberOfSteps)
+            .ToList();
+
+        ratios.Add(0);
+
+        return ratios;
+    }
+
+    private double PreviousRatio { get; set; } = 0;
+
+    public string BoxStyle { get; set; } = "";
+
+    public readonly IntersectionObserverOptions ObserverOptions = new IntersectionObserverOptions
+    {
+        RootMargin = "0px",
+        Threshold = BuildThresholdList()
+    };
+
+    public void OnIntersectingChanged(IntersectionObserverEntry entry)
+    {
+        if (entry.IntersectionRatio > PreviousRatio)
+        {
+            BoxStyle = $"background-color:{string.Format(IncreasingColor, entry.IntersectionRatio)}";
+        }
+        else
+        {
+            BoxStyle = $"background-color:{string.Format(DecreasingColor, entry.IntersectionRatio)}";
+        }
+
+        PreviousRatio = entry.IntersectionRatio;
+    }
+}
+
+<style>
+    .window {
+        height: 200vh;
+    }
+
+    .box {
+        margin-top: 100vh;
+        background-color: rgba(40, 40, 190, 255);
+        border: 4px solid rgb(20, 20, 120);
+        transition: background-color 1s, border 1s;
+        width: 350px;
+        height: 350px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .vertical {
+        color: white;
+        font: 32px "Arial";
+    }
+
+    .extra {
+        width: 350px;
+        height: 350px;
+        margin-top: 10px;
+        border: 4px solid rgb(20, 20, 120);
+        text-align: center;
+        padding: 20px;
+    }
+</style>
