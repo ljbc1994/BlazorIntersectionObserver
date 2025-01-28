@@ -69,15 +69,17 @@ function remove(callbackId) {
 function toEntryObject(entry) {
     function toRectReadOnlyObject(obj) {
         return {
-            X: obj.x,
-            Y: obj.y,
-            Width: obj.width,
-            Height: obj.height,
-            Top: obj.top,
-            Left: obj.left,
-            Bottom: obj.bottom,
-            Right: obj.right,
+            X: obj?.x ?? 0,
+            Y: obj?.y ?? 0,
+            Width: obj?.width ?? 0,
+            Height: obj?.height ?? 0,
+            Top: obj?.top ?? 0,
+            Left: obj?.left ?? 0,
+            Bottom: obj?.bottom ?? 0,
+            Right: obj?.right ?? 0,
         };
+
+        
     }
     return {
         IsIntersecting: entry.isIntersecting,

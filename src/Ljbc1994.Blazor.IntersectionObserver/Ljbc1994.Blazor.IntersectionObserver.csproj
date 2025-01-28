@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>BlazorIntersectionObserver</PackageId>
+    <PackageId>inmydata.BlazorIntersectionObserver</PackageId>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>8.0</LangVersion>
     <RazorLangVersion>3.0</RazorLangVersion>
@@ -16,10 +16,11 @@
     <Title>Blazor Intersection Observer</Title>
     <Description>Intersection Observer API for Blazor applications</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.1.0</Version>
+    <Version>3.1.0.2</Version>
     <Product>BlazorIntersectionObserver</Product>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>
+    <PackageReleaseNotes>3.1.0.1 - Null checks in JS 
+
 3.1.0
 - Use the navigation manager for importing intersection observer script
 
@@ -108,6 +109,6 @@ namespace conflicts with Blazor libraries.
     <None Include="Properties\launchSettings.json" />
     <None Include="tsconfig.json">
     </None>
-    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
