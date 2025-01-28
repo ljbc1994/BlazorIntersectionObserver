@@ -68,6 +68,8 @@ function remove(callbackId) {
 }
 function toEntryObject(entry) {
     function toRectReadOnlyObject(obj) {
+        if (!obj)
+            return null;
         return {
             X: obj?.x ?? 0,
             Y: obj?.y ?? 0,

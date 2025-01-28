@@ -189,6 +189,7 @@ export function remove(callbackId: string): boolean {
  */
 function toEntryObject(entry: IntersectionObserverEntry) {
   function toRectReadOnlyObject(obj) {
+    if (!obj) return null;
     return {
       X: obj.x,
       Y: obj.y,
